@@ -1,0 +1,42 @@
+{
+  "name": "tirus-times-back",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "ts-node-dev --exit-child --transpile-only --ignore-watch node_modules src/server.ts",
+    "start": "node --loader ts-node/esm ./dist/server.js",
+    "build": "tsc && yarn prisma migrate deploy",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TirusTimes/tirus-times-back.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/TirusTimes/tirus-times-back/issues"
+  },
+  "homepage": "https://github.com/TirusTimes/tirus-times-back#readme",
+  "devDependencies": {
+    "@types/express": "^4.17.14",
+    "@types/node": "^18.11.9",
+    "@types/yup": "^0.32.0",
+    "prisma": "^4.5.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.8.4"
+  },
+  "dependencies": {
+    "@prisma/client": "^4.5.0",
+    "@types/cors": "^2.8.12",
+    "@types/jest": "^29.2.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "jest": "^29.2.2",
+    "ts-node-dev": "^2.0.0",
+    "yup": "^0.32.11"
+  }
+}

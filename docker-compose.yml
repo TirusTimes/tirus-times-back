@@ -1,0 +1,13 @@
+version: "3.9"
+
+services:
+  database:
+    container_name: tirusTimes-postgres
+    image: postgres
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=tirusTimes
+      - POSTGRES_PASSWORD=1234
+      - POSTGRES_DB=prisma-postgres
