@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { StatusCodes } from "http-status-codes";
 import { ICreateUser } from "../helpers/dto";
 import { userService } from "../services/userService";
 const userServiceInstance = new userService();
@@ -26,13 +27,13 @@ export class userController {
         age,
         gender,
       });
-      return response.status(201).send(user);
+      return response.status(StatusCodes.OK).send(user);
     } catch (err) {
       if (err instanceof Error) {
-        return response.status(500).json({ error: err.message });
+        return response.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: err.message });
       }
       const errorMessage = "Failed to do something exceptional";
-      return response.status(500).json({ error: errorMessage });
+      return response.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: errorMessage });
     }
   }
 
@@ -40,26 +41,26 @@ export class userController {
     try {
       const id = request.params.id;
       const user = await userServiceInstance.getUserById(Number(id));
-      return response.status(201).send(user);
+      return response.status(StatusCodes.OK).send(user);
     } catch (err) {
       if (err instanceof Error) {
-        return response.status(500).json({ error: err.message });
+        return response.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: err.message });
       }
       const errorMessage = "Failed to do something exceptional";
-      return response.status(500).json({ error: errorMessage });
+      return response.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: errorMessage });
     }
   }
 
   async getAllUsers(request: Request, response: Response): Promise<Response> {
     try {
       const users = await userServiceInstance.getAllUsers();
-      return response.status(201).send(users);
+      return response.status(StatusCodes.OK).send(users);
     } catch (err) {
       if (err instanceof Error) {
-        return response.status(500).json({ error: err.message });
+        return response.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: err.message });
       }
       const errorMessage = "Failed to do something exceptional";
-      return response.status(500).json({ error: errorMessage });
+      return response.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: errorMessage });
     }
   }
 
@@ -86,13 +87,13 @@ export class userController {
         age,
         gender,
       });
-      return response.status(201).send(updatedUser);
+      return response.status(StatusCodes.OK).send(updatedUser);
     } catch (err) {
       if (err instanceof Error) {
-        return response.status(500).json({ error: err.message });
+        return response.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: err.message });
       }
       const errorMessage = "Failed to do something exceptional";
-      return response.status(500).json({ error: errorMessage });
+      return response.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: errorMessage });
     }
   }
 
@@ -100,13 +101,13 @@ export class userController {
     try {
       const id = request.params.id;
       const deletedUser = await userServiceInstance.deleteUser(Number(id));
-      return response.status(201).send(deletedUser);
+      return response.status(StatusCodes.OK).send(deletedUser);
     } catch (err) {
       if (err instanceof Error) {
-        return response.status(500).json({ error: err.message });
+        return response.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: err.message });
       }
       const errorMessage = "Failed to do something exceptional";
-      return response.status(500).json({ error: errorMessage });
+      return response.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: errorMessage });
     }
   }
 }
