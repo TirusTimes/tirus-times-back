@@ -1,4 +1,4 @@
-export interface ICreateUser {
+export interface IUser {
     username: string;
     firstname: string;
     lastname: string;
