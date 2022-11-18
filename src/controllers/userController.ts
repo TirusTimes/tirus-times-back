@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import { ICreateUser } from "../helpers/dto";
+import { IUser } from "../helpers/dto";
 import { userService } from "../services/userService";
 const userServiceInstance = new userService();
 
@@ -8,7 +8,7 @@ export class userController {
   async createUser(request: Request, response: Response): Promise<Response> {
     try {
       const user = await userServiceInstance.createUser({
-        ...request.body as ICreateUser
+        ...request.body as IUser
       });
       return response.status(StatusCodes.OK).send(user);
     } catch (err) {
@@ -51,7 +51,7 @@ export class userController {
     try {
       const id = request.params.id;
       const updatedUser = await userServiceInstance.updateUser(Number(id), {
-        ...request.body as ICreateUser
+        ...request.body as IUser
       });
       return response.status(StatusCodes.OK).send(updatedUser);
     } catch (err) {

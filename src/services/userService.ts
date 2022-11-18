@@ -1,5 +1,5 @@
 import { prismaClient } from "../database/prismaClient";
-import { ICreateUser } from "../helpers/dto";
+import { IUser } from "../helpers/dto";
 import { schemaCreate } from "../helpers/schemas";
 
 class userService {
@@ -12,7 +12,7 @@ class userService {
     position,
     age,
     gender,
-  }: ICreateUser) {
+  }: IUser) {
     const user = {
       username,
       firstname,
@@ -32,7 +32,7 @@ class userService {
     return createdUser;
   }
 
-  private async validateInsert(userToCreate: ICreateUser) {
+  private async validateInsert(userToCreate: IUser) {
     const user = await prismaClient.user.findFirst({
       where: {
         username: userToCreate.username,
@@ -70,7 +70,7 @@ class userService {
       position,
       age,
       gender,
-    }: ICreateUser
+    }: IUser
   ) {
     this.verifyIfExists(id);
 
