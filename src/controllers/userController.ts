@@ -7,25 +7,8 @@ const userServiceInstance = new userService();
 export class userController {
   async createUser(request: Request, response: Response): Promise<Response> {
     try {
-      const {
-        username,
-        firstname,
-        lastname,
-        email,
-        password,
-        position,
-        age,
-        gender,
-      }: ICreateUser = request.body;
       const user = await userServiceInstance.createUser({
-        username,
-        firstname,
-        lastname,
-        email,
-        password,
-        position,
-        age,
-        gender,
+        ...request.body as ICreateUser
       });
       return response.status(StatusCodes.OK).send(user);
     } catch (err) {
@@ -67,25 +50,8 @@ export class userController {
   async updateUser(request: Request, response: Response): Promise<Response> {
     try {
       const id = request.params.id;
-      const {
-        username,
-        firstname,
-        lastname,
-        email,
-        password,
-        position,
-        age,
-        gender,
-      }: ICreateUser = request.body;
       const updatedUser = await userServiceInstance.updateUser(Number(id), {
-        username,
-        firstname,
-        lastname,
-        email,
-        password,
-        position,
-        age,
-        gender,
+        ...request.body as ICreateUser
       });
       return response.status(StatusCodes.OK).send(updatedUser);
     } catch (err) {
