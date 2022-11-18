@@ -24,6 +24,10 @@ class userService {
       gender,
     };
 
+    schemaCreate.validate(user,{
+      abortEarly:false
+  }).catch(err => {throw new Error(err.name)})
+
     this.validateInsert(user);
 
     const createdUser = await prismaClient.user.create({
