@@ -13,7 +13,7 @@ export class userController {
       return response.status(StatusCodes.OK).send(user);
     } catch (err) {
       if (err instanceof Error) {
-        return response.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: err.message });
+        return response.status(StatusCodes.BAD_REQUEST).json({ error: err.message });
       }
       const errorMessage = "Failed to do something exceptional";
       return response.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: errorMessage });

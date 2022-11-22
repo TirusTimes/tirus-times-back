@@ -1,6 +1,6 @@
 import { prismaClient } from "../database/prismaClient";
 import { IUser } from "../helpers/dto";
-import { schemaCreate } from "../helpers/schemas";
+import { schemaCreate, schemaUpdate } from "../helpers/schemas";
 
 class userService {
   async createUser({
@@ -26,7 +26,9 @@ class userService {
 
     schemaCreate.validate(user,{
       abortEarly:false
-  }).catch(err => {throw new Error(err.name)})
+  }).catch(err => {
+    throw new Error(err.errors)
+  })
 
     this.validateInsert(user);
 
@@ -65,7 +67,9 @@ class userService {
 
   async updateUser(
     id: Number,
-    {
+    newData: IUser
+  ) {
+    const {
       username,
       firstname,
       lastname,
@@ -74,9 +78,14 @@ class userService {
       position,
       age,
       gender,
-    }: IUser
-  ) {
+    } = newData;
+    
     this.verifyIfExists(id);
+    schemaUpdate.validate(newData,{
+      abortEarly:false
+  }).catch(err => {
+    throw new Error(err.errors)
+  })
 
     const updatedUser = await prismaClient.user.update({
       where: {
@@ -116,3 +125,4 @@ class userService {
 }
 
 export { userService };
+
