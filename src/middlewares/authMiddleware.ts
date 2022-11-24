@@ -10,13 +10,12 @@ export default function authMiddleware(request: Request,response: Response, next
     }
 
     const token = authorization.split(' ')[1];
-    const secret = process.env.SECRET!
+    const secret = process.env.SECRET ?? 'default';
 
     try {
-        const data = jwt.verify(token, secret)
+        jwt.verify(token, secret)
         return next();
     } catch {
         return response.sendStatus(StatusCodes.UNAUTHORIZED)
     }
-
 }
