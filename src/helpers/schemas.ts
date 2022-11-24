@@ -10,16 +10,5 @@ const schemaCreate = Yup.object().shape({
     gender: Yup.string().required()
 })
 
-const schemaUpdate = Yup.object().shape({
-    username: Yup.string(),
-    firstname: Yup.string(),
-    lastname: Yup.string(),
-    email: Yup.string(),
-    password: Yup.string(),
-    position: Yup.string(),
-    age: Yup.number().positive().integer(),
-    gender: Yup.string()
-})
-
-export { schemaCreate, schemaUpdate }
+export { schemaCreate }
 
