@@ -7,7 +7,10 @@
     "dev": "ts-node-dev --exit-child --transpile-only --ignore-watch node_modules src/server.ts",
     "start": "node --loader ts-node/esm ./dist/server.js",
     "build": "tsc && yarn prisma migrate deploy",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "husky install",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix ."
   },
   "repository": {
     "type": "git",
@@ -24,9 +27,18 @@
     "@types/express": "^4.17.14",
     "@types/node": "^18.11.9",
     "@types/yup": "^0.32.0",
+    "@typescript-eslint/eslint-plugin": "^5.45.0",
+    "eslint": "^8.28.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-standard": "^17.0.0",
+    "eslint-config-standard-with-typescript": "^23.0.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-n": "^15.5.1",
+    "eslint-plugin-promise": "^6.1.1",
+    "husky": "^8.0.2",
     "prisma": "^4.5.0",
     "ts-node": "^10.9.1",
-    "typescript": "^4.8.4"
+    "typescript": "^4.9.3"
   },
   "dependencies": {
     "@prisma/client": "^4.5.0",
