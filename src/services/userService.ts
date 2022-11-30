@@ -3,7 +3,7 @@ import { IUser } from '../helpers/dto';
 import { schemaCreate } from '../helpers/schemas';
 
 class UserService {
-  async createUser ({
+  async createUser({
     username,
     firstname,
     lastname,
@@ -24,9 +24,13 @@ class UserService {
       gender
     };
 
-    schemaCreate.validate(user, {
-      abortEarly: false
-    }).catch(err => { throw new Error(err.name); });
+    schemaCreate
+      .validate(user, {
+        abortEarly: false
+      })
+      .catch((err) => {
+        throw new Error(err.name);
+      });
 
     this.validateInsert(user);
 
@@ -36,7 +40,7 @@ class UserService {
     return createdUser;
   }
 
-  private async validateInsert (userToCreate: IUser) {
+  private async validateInsert(userToCreate: IUser) {
     const user = await prismaClient.user.findFirst({
       where: {
         username: userToCreate.username
@@ -48,7 +52,7 @@ class UserService {
     }
   }
 
-  async getUserById (id: Number) {
+  async getUserById(id: Number) {
     const user = await prismaClient.user.findFirstOrThrow({
       where: {
         id: Number(id)
@@ -58,12 +62,12 @@ class UserService {
     return user;
   }
 
-  async getAllUsers () {
+  async getAllUsers() {
     const users = await prismaClient.user.findMany();
     return users;
   }
 
-  async updateUser (
+  async updateUser(
     id: Number,
     {
       username,
@@ -96,7 +100,7 @@ class UserService {
     return updatedUser;
   }
 
-  private async verifyIfExists (id: Number) {
+  private async verifyIfExists(id: Number) {
     prismaClient.user.findFirstOrThrow({
       where: {
         id: Number(id)
@@ -104,7 +108,7 @@ class UserService {
     });
   }
 
-  async deleteUser (id: Number) {
+  async deleteUser(id: Number) {
     this.verifyIfExists(id);
     const deletedUser = await prismaClient.user.delete({
       where: {
