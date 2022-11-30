@@ -1,6 +1,6 @@
-import { prismaClient } from '../database/prismaClient'
-import { IUser } from '../helpers/dto'
-import { schemaCreate } from '../helpers/schemas'
+import { prismaClient } from '../database/prismaClient';
+import { IUser } from '../helpers/dto';
+import { schemaCreate } from '../helpers/schemas';
 
 class UserService {
   async createUser ({
@@ -22,18 +22,18 @@ class UserService {
       position,
       age,
       gender
-    }
+    };
 
     schemaCreate.validate(user, {
       abortEarly: false
-    }).catch(err => { throw new Error(err.name) })
+    }).catch(err => { throw new Error(err.name); });
 
-    this.validateInsert(user)
+    this.validateInsert(user);
 
     const createdUser = await prismaClient.user.create({
       data: user
-    })
-    return createdUser
+    });
+    return createdUser;
   }
 
   private async validateInsert (userToCreate: IUser) {
@@ -41,10 +41,10 @@ class UserService {
       where: {
         username: userToCreate.username
       }
-    })
+    });
 
     if (user) {
-      throw new Error('Username already exists')
+      throw new Error('Username already exists');
     }
   }
 
@@ -53,14 +53,14 @@ class UserService {
       where: {
         id: Number(id)
       }
-    })
+    });
 
-    return user
+    return user;
   }
 
   async getAllUsers () {
-    const users = await prismaClient.user.findMany()
-    return users
+    const users = await prismaClient.user.findMany();
+    return users;
   }
 
   async updateUser (
@@ -76,7 +76,7 @@ class UserService {
       gender
     }: IUser
   ) {
-    this.verifyIfExists(id)
+    this.verifyIfExists(id);
 
     const updatedUser = await prismaClient.user.update({
       where: {
@@ -92,8 +92,8 @@ class UserService {
         age,
         gender
       }
-    })
-    return updatedUser
+    });
+    return updatedUser;
   }
 
   private async verifyIfExists (id: Number) {
@@ -101,18 +101,18 @@ class UserService {
       where: {
         id: Number(id)
       }
-    })
+    });
   }
 
   async deleteUser (id: Number) {
-    this.verifyIfExists(id)
+    this.verifyIfExists(id);
     const deletedUser = await prismaClient.user.delete({
       where: {
         id: Number(id)
       }
-    })
-    return deletedUser
+    });
+    return deletedUser;
   }
 }
 
-export { UserService }
+export { UserService };

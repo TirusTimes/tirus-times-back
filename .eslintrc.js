@@ -16,6 +16,7 @@ module.exports = {
     '@typescript-eslint/no-floating-promises': 'off',
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/no-misused-promises': 'off',
+    '@typescript-eslint/semi': 'off',
     'semi': [
       'error',
       'always'
