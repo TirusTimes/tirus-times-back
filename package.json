@@ -8,7 +8,9 @@
     "start": "node --loader ts-node/esm ./dist/server.js",
     "build": "tsc && yarn prisma migrate deploy",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix ."
   },
   "lint-staged": {
     "*.(js|ts)": "eslint --fix"
