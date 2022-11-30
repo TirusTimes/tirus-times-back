@@ -1,4 +1,4 @@
-import * as Yup from 'yup'
+import * as Yup from 'yup';
 const schemaCreate = Yup.object().shape({
   username: Yup.string().required(),
   firstname: Yup.string().required(),
@@ -8,6 +8,6 @@ const schemaCreate = Yup.object().shape({
   position: Yup.string().required(),
   age: Yup.number().required().positive().integer(),
   gender: Yup.string().required()
-})
+});
 
-export { schemaCreate }
+export { schemaCreate };
