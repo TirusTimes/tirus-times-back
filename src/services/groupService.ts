@@ -52,6 +52,11 @@ class GroupService {
 
   async deleteGroup(id: Number) {
     this.verifyIfExists(id);
+    await prismaClient.userGroup.deleteMany({
+      where: {
+        groupId: Number(id)
+      }
+    });
     const deletedGroup = await prismaClient.group.delete({
       where: {
         id: Number(id)
@@ -75,7 +80,7 @@ class GroupService {
   async removeUser(userId: Number, groupId: Number) {
     this.verifyIfExists(groupId);
     userServiceInstance.verifyIfExists(userId);
-    const removedUserGroup = prismaClient.userGroup.delete({
+    const removedUserGroup = await prismaClient.userGroup.delete({
       where: {
         userId_groupId: {
           userId: Number(userId),
@@ -83,12 +88,12 @@ class GroupService {
         }
       }
     });
-    return await removedUserGroup;
+    return removedUserGroup;
   }
 
   async getUsersByGroup(id: Number) {
     this.verifyIfExists(id);
-    const users = prismaClient.user.findMany({
+    const users = await prismaClient.user.findMany({
       where: {
         groups: {
           some: {
@@ -97,7 +102,7 @@ class GroupService {
         }
       }
     });
-    return await users;
+    return users;
   }
 
   private async verifyIfExists(id: Number) {
