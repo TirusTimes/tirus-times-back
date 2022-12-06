@@ -8,3 +8,7 @@ export interface IUser {
   age: number
   gender: string
 }
+
+export interface IGroup {
+  name: string
+}
