@@ -1,6 +1,7 @@
 
 import { prismaClient } from '../database/prismaClient';
 import { IUser } from '../helpers/dto';
+import { schemaCreateUser } from '../helpers/schemas';
 
 class UserService {
   async createUser({
@@ -23,6 +24,16 @@ class UserService {
       age,
       gender
     };
+
+    schemaCreateUser
+      .validate(user, {
+        abortEarly: false
+      })
+      .catch((err) => {
+        throw new Error(err.name);
+      });
+
+    this.validateInsert(user);
 
     const createdUser = await prismaClient.user.create({
       data: user
@@ -103,7 +114,7 @@ class UserService {
     return updatedUser;
   }
 
-  private async verifyIfExists(id: Number) {
+  async verifyIfExists(id: Number) {
     prismaClient.user.findFirstOrThrow({
       where: {
         id: Number(id)
@@ -121,6 +132,20 @@ class UserService {
     // @ts-expect-error
     delete deletedUser.password;
     return deletedUser;
+  }
+
+  async getGroupsByUser(id: Number) {
+    this.verifyIfExists(id);
+    const users = prismaClient.group.findMany({
+      where: {
+        users: {
+          some: {
+            userId: Number(id)
+          }
+        }
+      }
+    });
+    return await users;
   }
 }
 

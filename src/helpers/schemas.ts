@@ -21,4 +21,8 @@ const schemaUpdateUser = Yup.object().shape({
   gender: Yup.string()
 });
 
-export { schemaCreateUser, schemaUpdateUser };
+const groupSchemaCreate = Yup.object().shape({
+  name: Yup.string().required()
+});
+
+export { schemaCreateUser, schemaUpdateUser, groupSchemaCreate };

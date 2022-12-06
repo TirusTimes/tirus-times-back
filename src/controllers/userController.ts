@@ -97,4 +97,22 @@ export class UserController {
         .json({ error: errorMessage });
     }
   }
+
+  async getAllGroups(request: Request, response: Response): Promise<Response> {
+    try {
+      const userId = request.params.id;
+      const groups = await userServiceInstance.getGroupsByUser(Number(userId));
+      return response.status(StatusCodes.OK).send(groups);
+    } catch (err) {
+      if (err instanceof Error) {
+        return response
+          .status(StatusCodes.INTERNAL_SERVER_ERROR)
+          .json({ error: err.message });
+      }
+      const errorMessage = 'Failed to do something exceptional';
+      return response
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ error: errorMessage });
+    }
+  }
 }
