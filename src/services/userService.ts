@@ -124,6 +124,11 @@ class UserService {
 
   async deleteUser(id: Number) {
     this.verifyIfExists(id);
+    await prismaClient.userGroup.deleteMany({
+      where: {
+        userId: Number(id)
+      }
+    });
     const deletedUser = await prismaClient.user.delete({
       where: {
         id: Number(id)
@@ -136,7 +141,7 @@ class UserService {
 
   async getGroupsByUser(id: Number) {
     this.verifyIfExists(id);
-    const users = prismaClient.group.findMany({
+    const users = await prismaClient.group.findMany({
       where: {
         users: {
           some: {
@@ -145,7 +150,7 @@ class UserService {
         }
       }
     });
-    return await users;
+    return users;
   }
 }
 
