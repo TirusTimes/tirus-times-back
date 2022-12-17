@@ -1,5 +1,5 @@
-import { prismaClient } from "../database/prismaClient";
-import { IUser } from "../helpers/dto";
+import { prismaClient } from '../database/prismaClient';
+import { IUser } from '../helpers/dto';
 
 class UserService {
   async createUser({
@@ -28,6 +28,8 @@ class UserService {
     const createdUser = await prismaClient.user.create({
       data: user
     });
+
+    delete createdUser.password;
     return createdUser;
   }
 
@@ -50,12 +52,17 @@ class UserService {
       }
     });
 
+    delete user.password;
     return user;
   }
 
   async getAllUsers() {
     const users = await prismaClient.user.findMany();
-    return users;
+    const usersWithoutPasswords = users.map(user => {
+      delete user.password;
+      return user;
+    });
+    return usersWithoutPasswords;
   }
 
   async updateUser(
@@ -70,7 +77,7 @@ class UserService {
       password,
       position,
       age,
-      gender,
+      gender
     } = newData;
     this.verifyIfExists(id);
 
@@ -89,6 +96,7 @@ class UserService {
         gender
       }
     });
+    delete updatedUser.password;
     return updatedUser;
   }
 
@@ -107,9 +115,9 @@ class UserService {
         id: Number(id)
       }
     });
+    delete deletedUser.password;
     return deletedUser;
   }
 }
 
 export { UserService };
-

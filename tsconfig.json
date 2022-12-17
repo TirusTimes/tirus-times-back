@@ -5,7 +5,8 @@
       "strict": false,
       "lib": ["esnext"],
       "esModuleInterop": true,
-      "typeRoots": ["node_modules/yup"]
+      "typeRoots": ["node_modules/yup"],
+      "strictNullChecks": true
     }
   }
   
