@@ -98,7 +98,7 @@ export class UserController {
     }
   }
 
-  async getAllGroups(request: Request, response: Response): Promise<Response> {
+  async getAllUserGroups(request: Request, response: Response): Promise<Response> {
     try {
       const userId = request.params.id;
       const groups = await userServiceInstance.getGroupsByUser(Number(userId));
