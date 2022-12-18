@@ -13,15 +13,9 @@ export class GroupController {
       });
       return response.status(StatusCodes.OK).send(group);
     } catch (err) {
-      if (err instanceof Error) {
-        return response
-          .status(StatusCodes.INTERNAL_SERVER_ERROR)
-          .json({ error: err.message });
-      }
-      const errorMessage = 'Failed to do something exceptional';
       return response
         .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({ error: errorMessage });
+        .json({ error: err.message ? err.message : 'Failed to do something exceptional' });
     }
   }
 
@@ -31,15 +25,9 @@ export class GroupController {
       const group = await groupServiceInstance.getGroupById(Number(id));
       return response.status(StatusCodes.OK).send(group);
     } catch (err) {
-      if (err instanceof Error) {
-        return response
-          .status(StatusCodes.INTERNAL_SERVER_ERROR)
-          .json({ error: err.message });
-      }
-      const errorMessage = 'Failed to do something exceptional';
       return response
         .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({ error: errorMessage });
+        .json({ error: err.message ? err.message : 'Failed to do something exceptional' });
     }
   }
 
@@ -48,15 +36,9 @@ export class GroupController {
       const groups = await groupServiceInstance.getAllGroups();
       return response.status(StatusCodes.OK).send(groups);
     } catch (err) {
-      if (err instanceof Error) {
-        return response
-          .status(StatusCodes.INTERNAL_SERVER_ERROR)
-          .json({ error: err.message });
-      }
-      const errorMessage = 'Failed to do something exceptional';
       return response
         .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({ error: errorMessage });
+        .json({ error: err.message ? err.message : 'Failed to do something exceptional' });
     }
   }
 
@@ -68,15 +50,9 @@ export class GroupController {
       });
       return response.status(StatusCodes.OK).send(updatedGroup);
     } catch (err) {
-      if (err instanceof Error) {
-        return response
-          .status(StatusCodes.INTERNAL_SERVER_ERROR)
-          .json({ error: err.message });
-      }
-      const errorMessage = 'Failed to do something exceptional';
       return response
         .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({ error: errorMessage });
+        .json({ error: err.message ? err.message : 'Failed to do something exceptional' });
     }
   }
 
@@ -86,15 +62,9 @@ export class GroupController {
       const deletedGroup = await groupServiceInstance.deleteGroup(Number(id));
       return response.status(StatusCodes.OK).send(deletedGroup);
     } catch (err) {
-      if (err instanceof Error) {
-        return response
-          .status(StatusCodes.INTERNAL_SERVER_ERROR)
-          .json({ error: err.message });
-      }
-      const errorMessage = 'Failed to do something exceptional';
       return response
         .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({ error: errorMessage });
+        .json({ error: err.message ? err.message : 'Failed to do something exceptional' });
     }
   }
 
@@ -108,15 +78,9 @@ export class GroupController {
       );
       return response.status(StatusCodes.OK).send(insertedUser);
     } catch (err) {
-      if (err instanceof Error) {
-        return response
-          .status(StatusCodes.INTERNAL_SERVER_ERROR)
-          .json({ error: err.message });
-      }
-      const errorMessage = 'Failed to do something exceptional';
       return response
         .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({ error: errorMessage });
+        .json({ error: err.message ? err.message : 'Failed to do something exceptional' });
     }
   }
 
@@ -130,15 +94,9 @@ export class GroupController {
       );
       return response.status(StatusCodes.OK).send(removedUser);
     } catch (err) {
-      if (err instanceof Error) {
-        return response
-          .status(StatusCodes.INTERNAL_SERVER_ERROR)
-          .json({ error: err.message });
-      }
-      const errorMessage = 'Failed to do something exceptional';
       return response
         .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({ error: errorMessage });
+        .json({ error: err.message ? err.message : 'Failed to do something exceptional' });
     }
   }
 
@@ -148,15 +106,9 @@ export class GroupController {
       const users = await groupServiceInstance.getUsersByGroup(Number(groupId));
       return response.status(StatusCodes.OK).send(users);
     } catch (err) {
-      if (err instanceof Error) {
-        return response
-          .status(StatusCodes.INTERNAL_SERVER_ERROR)
-          .json({ error: err.message });
-      }
-      const errorMessage = 'Failed to do something exceptional';
       return response
         .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({ error: errorMessage });
+        .json({ error: err.message ? err.message : 'Failed to do something exceptional' });
     }
   }
 }
