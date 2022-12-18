@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { GroupService } from '../services/groupService';
 import { IGroup } from './../helpers/dto';
+
 const groupServiceInstance = new GroupService();
 
 export class GroupController {
