@@ -7,15 +7,16 @@ const userServiceInstance = new UserService();
 export class UserController {
   async createUser(request: Request, response: Response): Promise<Response> {
     try {
+      await userServiceInstance.validateInsert({
+        ...(request.body as IUser)
+      });
       const user = await userServiceInstance.createUser({
         ...(request.body as IUser)
       });
       return response.status(StatusCodes.OK).send(user);
     } catch (err) {
       if (err instanceof Error) {
-        return response
-          .status(StatusCodes.INTERNAL_SERVER_ERROR)
-          .json({ error: err.message });
+        return response.status(StatusCodes.BAD_REQUEST).json({ error: err.message });
       }
       const errorMessage = 'Failed to do something exceptional';
       return response

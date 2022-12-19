@@ -1,6 +1,5 @@
 import { prismaClient } from '../database/prismaClient';
 import { IUser } from '../helpers/dto';
-import { schemaCreate } from '../helpers/schemas';
 
 class UserService {
   async createUser({
@@ -24,23 +23,15 @@ class UserService {
       gender
     };
 
-    schemaCreate
-      .validate(user, {
-        abortEarly: false
-      })
-      .catch((err) => {
-        throw new Error(err.name);
-      });
-
-    this.validateInsert(user);
-
     const createdUser = await prismaClient.user.create({
       data: user
     });
+
+    delete createdUser.password;
     return createdUser;
   }
 
-  private async validateInsert(userToCreate: IUser) {
+  async validateInsert(userToCreate: IUser) {
     const user = await prismaClient.user.findFirst({
       where: {
         username: userToCreate.username
@@ -59,17 +50,24 @@ class UserService {
       }
     });
 
+    delete user.password;
     return user;
   }
 
   async getAllUsers() {
     const users = await prismaClient.user.findMany();
-    return users;
+    const usersWithoutPasswords = users.map(user => {
+      delete user.password;
+      return user;
+    });
+    return usersWithoutPasswords;
   }
 
   async updateUser(
     id: Number,
-    {
+    newData: IUser
+  ) {
+    const {
       username,
       firstname,
       lastname,
@@ -78,8 +76,7 @@ class UserService {
       position,
       age,
       gender
-    }: IUser
-  ) {
+    } = newData;
     this.verifyIfExists(id);
 
     const updatedUser = await prismaClient.user.update({
@@ -97,6 +94,7 @@ class UserService {
         gender
       }
     });
+    delete updatedUser.password;
     return updatedUser;
   }
 
@@ -115,6 +113,7 @@ class UserService {
         id: Number(id)
       }
     });
+    delete deletedUser.password;
     return deletedUser;
   }
 }
