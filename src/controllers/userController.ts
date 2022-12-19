@@ -7,6 +7,9 @@ const userServiceInstance = new UserService();
 export class UserController {
   async createUser(request: Request, response: Response): Promise<Response> {
     try {
+      await userServiceInstance.validateInsert({
+        ...(request.body as IUser)
+      });
       const user = await userServiceInstance.createUser({
         ...(request.body as IUser)
       });

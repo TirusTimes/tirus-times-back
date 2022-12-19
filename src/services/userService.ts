@@ -23,8 +23,6 @@ class UserService {
       gender
     };
 
-    this.validateInsert(user);
-
     const createdUser = await prismaClient.user.create({
       data: user
     });
@@ -33,7 +31,7 @@ class UserService {
     return createdUser;
   }
 
-  private async validateInsert(userToCreate: IUser) {
+  async validateInsert(userToCreate: IUser) {
     const user = await prismaClient.user.findFirst({
       where: {
         username: userToCreate.username
