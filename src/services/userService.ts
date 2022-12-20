@@ -1,3 +1,4 @@
+
 import { prismaClient } from '../database/prismaClient';
 import { IUser } from '../helpers/dto';
 
@@ -27,6 +28,7 @@ class UserService {
       data: user
     });
 
+    // @ts-expect-error
     delete createdUser.password;
     return createdUser;
   }
@@ -50,6 +52,7 @@ class UserService {
       }
     });
 
+    // @ts-expect-error
     delete user.password;
     return user;
   }
@@ -57,6 +60,7 @@ class UserService {
   async getAllUsers() {
     const users = await prismaClient.user.findMany();
     const usersWithoutPasswords = users.map(user => {
+      // @ts-expect-error
       delete user.password;
       return user;
     });
@@ -94,6 +98,7 @@ class UserService {
         gender
       }
     });
+    // @ts-expect-error
     delete updatedUser.password;
     return updatedUser;
   }
@@ -113,6 +118,7 @@ class UserService {
         id: Number(id)
       }
     });
+    // @ts-expect-error
     delete deletedUser.password;
     return deletedUser;
   }
