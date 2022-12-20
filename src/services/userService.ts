@@ -56,10 +56,10 @@ class UserService {
     }
   }
 
-  async getUserById(id: Number) {
+  async getUserById(id: number) {
     const user = await prismaClient.user.findFirstOrThrow({
       where: {
-        id: Number(id)
+        id
       }
     });
 
@@ -79,7 +79,7 @@ class UserService {
   }
 
   async updateUser(
-    id: Number,
+    id: number,
     newData: IUser
   ) {
     const {
@@ -96,7 +96,7 @@ class UserService {
 
     const updatedUser = await prismaClient.user.update({
       where: {
-        id: Number(id)
+        id
       },
       data: {
         username,
@@ -114,24 +114,24 @@ class UserService {
     return updatedUser;
   }
 
-  async verifyIfExists(id: Number) {
+  async verifyIfExists(id: number) {
     prismaClient.user.findFirstOrThrow({
       where: {
-        id: Number(id)
+        id
       }
     });
   }
 
-  async deleteUser(id: Number) {
+  async deleteUser(id: number) {
     this.verifyIfExists(id);
     await prismaClient.userGroup.deleteMany({
       where: {
-        userId: Number(id)
+        userId: id
       }
     });
     const deletedUser = await prismaClient.user.delete({
       where: {
-        id: Number(id)
+        id
       }
     });
     // @ts-expect-error
@@ -139,13 +139,13 @@ class UserService {
     return deletedUser;
   }
 
-  async getGroupsByUser(id: Number) {
+  async getGroupsByUser(id: number) {
     this.verifyIfExists(id);
     const users = await prismaClient.group.findMany({
       where: {
         users: {
           some: {
-            userId: Number(id)
+            userId: id
           }
         }
       }

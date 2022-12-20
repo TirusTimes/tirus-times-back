@@ -15,7 +15,7 @@ export class GroupController {
     } catch (err) {
       return response
         .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({ error: err.message ? err.message : 'Failed to do something exceptional' });
+        .json({ error: err instanceof Error ? err.message : 'Failed to do something exceptional' });
     }
   }
 
@@ -27,7 +27,7 @@ export class GroupController {
     } catch (err) {
       return response
         .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({ error: err.message ? err.message : 'Failed to do something exceptional' });
+        .json({ error: err instanceof Error ? err.message : 'Failed to do something exceptional' });
     }
   }
 
@@ -38,7 +38,7 @@ export class GroupController {
     } catch (err) {
       return response
         .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({ error: err.message ? err.message : 'Failed to do something exceptional' });
+        .json({ error: err instanceof Error ? err.message : 'Failed to do something exceptional' });
     }
   }
 
@@ -52,7 +52,7 @@ export class GroupController {
     } catch (err) {
       return response
         .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({ error: err.message ? err.message : 'Failed to do something exceptional' });
+        .json({ error: err instanceof Error ? err.message : 'Failed to do something exceptional' });
     }
   }
 
@@ -64,7 +64,7 @@ export class GroupController {
     } catch (err) {
       return response
         .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({ error: err.message ? err.message : 'Failed to do something exceptional' });
+        .json({ error: err instanceof Error ? err.message : 'Failed to do something exceptional' });
     }
   }
 
@@ -80,7 +80,7 @@ export class GroupController {
     } catch (err) {
       return response
         .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({ error: err.message ? err.message : 'Failed to do something exceptional' });
+        .json({ error: err instanceof Error ? err.message : 'Failed to do something exceptional' });
     }
   }
 
@@ -96,7 +96,7 @@ export class GroupController {
     } catch (err) {
       return response
         .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({ error: err.message ? err.message : 'Failed to do something exceptional' });
+        .json({ error: err instanceof Error ? err.message : 'Failed to do something exceptional' });
     }
   }
 
@@ -108,7 +108,7 @@ export class GroupController {
     } catch (err) {
       return response
         .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({ error: err.message ? err.message : 'Failed to do something exceptional' });
+        .json({ error: err instanceof Error ? err.message : 'Failed to do something exceptional' });
     }
   }
 }
