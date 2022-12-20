@@ -23,6 +23,7 @@ export class AuthController {
 
     const token = jwt.sign({ id: user?.id }, secret, { expiresIn: '1d' });
 
+    // @ts-expect-error
     delete user.password;
 
     return response.json({
