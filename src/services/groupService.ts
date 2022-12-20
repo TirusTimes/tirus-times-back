@@ -2,6 +2,7 @@ import { IGroup } from './../helpers/dto';
 import { prismaClient } from '../database/prismaClient';
 import { UserService } from './userService';
 import { groupSchemaCreate } from '../helpers/schemas';
+
 const userServiceInstance = new UserService();
 
 class GroupService {
@@ -22,10 +23,10 @@ class GroupService {
     return createdGroup;
   }
 
-  async getGroupById(id: Number) {
+  async getGroupById(id: number) {
     const group = await prismaClient.group.findFirstOrThrow({
       where: {
-        id: Number(id)
+        id
       }
     });
     return group;
@@ -36,68 +37,68 @@ class GroupService {
     return groups;
   }
 
-  async updateGroup(id: Number, { name }: IGroup) {
+  async updateGroup(id: number, { name }: IGroup) {
     this.verifyIfExists(id);
     const group = {
       name
     };
     const updatedGroup = await prismaClient.group.update({
       where: {
-        id: Number(id)
+        id
       },
       data: group
     });
     return updatedGroup;
   }
 
-  async deleteGroup(id: Number) {
+  async deleteGroup(id: number) {
     this.verifyIfExists(id);
     await prismaClient.userGroup.deleteMany({
       where: {
-        groupId: Number(id)
+        groupId: id
       }
     });
     const deletedGroup = await prismaClient.group.delete({
       where: {
-        id: Number(id)
+        id
       }
     });
     return deletedGroup;
   }
 
-  async insertUser(userId: Number, groupId: Number) {
+  async insertUser(userId: number, groupId: number) {
     this.verifyIfExists(groupId);
     userServiceInstance.verifyIfExists(userId);
     const userGroup = prismaClient.userGroup.create({
       data: {
-        userId: Number(userId),
-        groupId: Number(groupId)
+        userId,
+        groupId
       }
     });
     return await userGroup;
   }
 
-  async removeUser(userId: Number, groupId: Number) {
+  async removeUser(userId: number, groupId: number) {
     this.verifyIfExists(groupId);
     userServiceInstance.verifyIfExists(userId);
     const removedUserGroup = await prismaClient.userGroup.delete({
       where: {
         userId_groupId: {
-          userId: Number(userId),
-          groupId: Number(groupId)
+          userId,
+          groupId
         }
       }
     });
     return removedUserGroup;
   }
 
-  async getUsersByGroup(id: Number) {
+  async getUsersByGroup(id: number) {
     this.verifyIfExists(id);
     const users = await prismaClient.user.findMany({
       where: {
         groups: {
           some: {
-            groupId: Number(id)
+            groupId: id
           }
         }
       }
@@ -105,10 +106,10 @@ class GroupService {
     return users;
   }
 
-  private async verifyIfExists(id: Number) {
+  private async verifyIfExists(id: number) {
     prismaClient.group.findFirstOrThrow({
       where: {
-        id: Number(id)
+        id
       }
     });
   }

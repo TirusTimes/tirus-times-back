@@ -1,12 +1,11 @@
 {
-    "compilerOptions": {
-      "sourceMap": true,
-      "outDir": "dist",
-      "strict": false,
-      "lib": ["esnext"],
-      "esModuleInterop": true,
-      "typeRoots": ["node_modules/yup"],
-      "strictNullChecks": true
-    }
+  "compilerOptions": {
+    "sourceMap": true,
+    "outDir": "dist",
+    "strict": true,
+    "lib": ["esnext"],
+    "esModuleInterop": true,
+    "typeRoots": ["node_modules/yup"],
+    "strictNullChecks": true
   }
-  
+}
