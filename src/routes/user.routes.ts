@@ -31,5 +31,6 @@ userRoutes.get('/users/:id', userControllerInstance.getUser);
 userRoutes.get('/users', userControllerInstance.getAllUsers);
 userRoutes.put('/users/:id', authMiddleware, validateUpdateUser, userControllerInstance.updateUser);
 userRoutes.delete('/users/:id', userControllerInstance.deleteUser);
+userRoutes.get('/users/:id/groups', userControllerInstance.getAllUserGroups);
 
 export { userRoutes };

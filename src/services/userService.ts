@@ -1,6 +1,7 @@
 
 import { prismaClient } from '../database/prismaClient';
 import { IUser } from '../helpers/dto';
+import { schemaCreateUser } from '../helpers/schemas';
 
 class UserService {
   async createUser({
@@ -24,6 +25,16 @@ class UserService {
       gender
     };
 
+    schemaCreateUser
+      .validate(user, {
+        abortEarly: false
+      })
+      .catch((err) => {
+        throw new Error(err.name);
+      });
+
+    this.validateInsert(user);
+
     const createdUser = await prismaClient.user.create({
       data: user
     });
@@ -45,10 +56,10 @@ class UserService {
     }
   }
 
-  async getUserById(id: Number) {
+  async getUserById(id: number) {
     const user = await prismaClient.user.findFirstOrThrow({
       where: {
-        id: Number(id)
+        id
       }
     });
 
@@ -68,7 +79,7 @@ class UserService {
   }
 
   async updateUser(
-    id: Number,
+    id: number,
     newData: IUser
   ) {
     const {
@@ -85,7 +96,7 @@ class UserService {
 
     const updatedUser = await prismaClient.user.update({
       where: {
-        id: Number(id)
+        id
       },
       data: {
         username,
@@ -103,24 +114,43 @@ class UserService {
     return updatedUser;
   }
 
-  private async verifyIfExists(id: Number) {
+  async verifyIfExists(id: number) {
     prismaClient.user.findFirstOrThrow({
       where: {
-        id: Number(id)
+        id
       }
     });
   }
 
-  async deleteUser(id: Number) {
+  async deleteUser(id: number) {
     this.verifyIfExists(id);
+    await prismaClient.userGroup.deleteMany({
+      where: {
+        userId: id
+      }
+    });
     const deletedUser = await prismaClient.user.delete({
       where: {
-        id: Number(id)
+        id
       }
     });
     // @ts-expect-error
     delete deletedUser.password;
     return deletedUser;
+  }
+
+  async getGroupsByUser(id: number) {
+    this.verifyIfExists(id);
+    const users = await prismaClient.group.findMany({
+      where: {
+        users: {
+          some: {
+            userId: id
+          }
+        }
+      }
+    });
+    return users;
   }
 }
 
