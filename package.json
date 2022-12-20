@@ -2,7 +2,7 @@
   "name": "tirus-times-back",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/server.ts",
   "scripts": {
     "dev": "ts-node-dev --exit-child --transpile-only --ignore-watch node_modules src/server.ts",
     "start": "node --loader ts-node/esm ./dist/server.js",
