@@ -1,4 +1,4 @@
-import cors from 'cors';
+// import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
 import router from './routes/index';
@@ -11,12 +11,11 @@ const app = express();
 
 app.use(express.json());
 app.use(function (req, res, next) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
-  next();
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With, Accept');
 });
-app.use(cors());
+// app.use(cors());
 app.use('/api', router);
 
 app.listen(PORT, () => {
