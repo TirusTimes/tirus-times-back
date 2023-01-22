@@ -5,11 +5,11 @@ import { prismaClient } from '../database/prismaClient';
 
 export class AuthController {
   async authenticate(request: Request, response: Response) {
-    const { username, password } = request.body;
+    const { email, password } = request.body;
     const secret = process.env.SECRET ?? 'default';
     const user = await prismaClient.user.findFirst({
       where: {
-        username
+        email
       }
     });
 
