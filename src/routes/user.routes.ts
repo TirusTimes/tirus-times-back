@@ -1,9 +1,11 @@
 import { NextFunction, Request, Response, Router } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { ValidationError } from 'yup';
+
 import { UserController } from '../controllers/userController';
 import { schemaCreateUser, schemaUpdateUser } from '../helpers/schemas';
 import authMiddleware from '../middlewares/authMiddleware';
+
 const userRoutes = Router();
 
 const userControllerInstance = new UserController();
@@ -27,10 +29,10 @@ const validateUpdateUser = async (request: Request, response: Response, next: Ne
 };
 
 userRoutes.post('/users', validateCreateUser, userControllerInstance.createUser);
-userRoutes.get('/users/:id', userControllerInstance.getUser);
-userRoutes.get('/users', userControllerInstance.getAllUsers);
+userRoutes.get('/users/:id', authMiddleware, userControllerInstance.getUser);
+userRoutes.get('/users', authMiddleware, userControllerInstance.getAllUsers);
 userRoutes.put('/users/:id', authMiddleware, validateUpdateUser, userControllerInstance.updateUser);
-userRoutes.delete('/users/:id', userControllerInstance.deleteUser);
-userRoutes.get('/users/:id/groups', userControllerInstance.getAllUserGroups);
+userRoutes.delete('/users/:id', authMiddleware, userControllerInstance.deleteUser);
+userRoutes.get('/users/:id/groups', authMiddleware, userControllerInstance.getAllUserGroups);
 
 export { userRoutes };
