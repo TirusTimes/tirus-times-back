@@ -1,14 +1,15 @@
-import { IGroup } from './../helpers/dto';
 import { prismaClient } from '../database/prismaClient';
-import { UserService } from './userService';
 import { groupSchemaCreate } from '../helpers/schemas';
+import { IGroup } from './../helpers/dto';
+import { UserService } from './userService';
 
 const userServiceInstance = new UserService();
 
 class GroupService {
-  async createGroup({ name }: IGroup) {
+  async createGroup({ name, adminID }: IGroup) {
     const group = {
-      name
+      name,
+      adminID
     };
     groupSchemaCreate
       .validate(group, {
@@ -51,28 +52,19 @@ class GroupService {
     return updatedGroup;
   }
 
-  async deleteGroup(id: number) {
-    this.verifyIfExists(id);
-    await prismaClient.userGroup.deleteMany({
-      where: {
-        groupId: id
-      }
-    });
-    const deletedGroup = await prismaClient.group.delete({
-      where: {
-        id
-      }
-    });
-    return deletedGroup;
-  }
-
   async insertUser(userId: number, groupId: number) {
     this.verifyIfExists(groupId);
     userServiceInstance.verifyIfExists(userId);
-    const userGroup = prismaClient.userGroup.create({
+    const userGroup = prismaClient.group.update({
+      where: {
+        id: groupId
+      },
       data: {
-        userId,
-        groupId
+        users: {
+          connect: {
+            id: userId
+          }
+        }
       }
     });
     return await userGroup;
@@ -81,11 +73,15 @@ class GroupService {
   async removeUser(userId: number, groupId: number) {
     this.verifyIfExists(groupId);
     userServiceInstance.verifyIfExists(userId);
-    const removedUserGroup = await prismaClient.userGroup.delete({
+    const removedUserGroup = await prismaClient.group.update({
       where: {
-        userId_groupId: {
-          userId,
-          groupId
+        id: groupId
+      },
+      data: {
+        users: {
+          delete: {
+            id: userId
+          }
         }
       }
     });
@@ -98,7 +94,7 @@ class GroupService {
       where: {
         groups: {
           some: {
-            groupId: id
+            id
           }
         }
       }

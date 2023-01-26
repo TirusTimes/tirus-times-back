@@ -58,18 +58,6 @@ export class UserController {
     }
   }
 
-  async deleteUser(request: Request, response: Response): Promise<Response> {
-    try {
-      const id = request.params.id;
-      const deletedUser = await userServiceInstance.deleteUser(Number(id));
-      return response.status(StatusCodes.OK).send(deletedUser);
-    } catch (err) {
-      return response
-        .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({ error: err instanceof Error ? err.message : 'Failed to do something exceptional' });
-    }
-  }
-
   async getAllUserGroups(request: Request, response: Response): Promise<Response> {
     try {
       const userId = request.params.id;
