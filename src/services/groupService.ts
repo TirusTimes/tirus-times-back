@@ -52,10 +52,11 @@ class GroupService {
     return updatedGroup;
   }
 
-  async insertUser(userId: number, groupId: number) {
+  async acceptInvite(userId: number, groupId: number, adminId: string) {
+    this.verifyGroupOwner(groupId, Number(adminId));
     this.verifyIfExists(groupId);
     userServiceInstance.verifyIfExists(userId);
-    const userGroup = prismaClient.group.update({
+    const userGroup = await prismaClient.group.update({
       where: {
         id: groupId
       },
@@ -67,7 +68,53 @@ class GroupService {
         }
       }
     });
-    return await userGroup;
+
+    await prismaClient.inviteUser.update({
+      where: {
+        userId_groupId: {
+          userId,
+          groupId
+        }
+      },
+      data: {
+        status: 'ACCEPTED'
+      }
+    });
+    return userGroup;
+  }
+
+  async sendInvite(groupId: number, userId: number) {
+    this.verifyIfExists(groupId);
+    await prismaClient.inviteUser.create({
+      data: {
+        userId,
+        groupId
+      }
+    });
+  }
+
+  async rejectInvite(groupId: number, userId: number) {
+    this.verifyIfExists(groupId);
+    await prismaClient.inviteUser.update({
+      where: {
+        userId_groupId: {
+          userId,
+          groupId
+        }
+      },
+      data: {
+        status: 'REJECTED'
+      }
+    });
+  }
+
+  async getGroupInvites(groupId: number, owner: string) {
+    this.verifyGroupOwner(groupId, Number(owner));
+    await prismaClient.inviteUser.findMany({
+      where: {
+        AND: [{ groupId }, { status: 'WAITING' }]
+      }
+    });
   }
 
   async removeUser(userId: number, groupId: number) {
@@ -106,6 +153,15 @@ class GroupService {
     prismaClient.group.findFirstOrThrow({
       where: {
         id
+      }
+    });
+  }
+
+  private async verifyGroupOwner(id: number, adminID: number) {
+    prismaClient.group.findFirstOrThrow({
+      where: {
+        id,
+        adminID
       }
     });
   }
