@@ -15,7 +15,7 @@ export default function authMiddleware(request: Request, response: Response, nex
   try {
     jwt.verify(token, secret);
     return next();
-  } catch {
+  } catch (err) {
     return response.sendStatus(StatusCodes.UNAUTHORIZED);
   }
 }

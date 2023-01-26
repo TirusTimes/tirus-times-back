@@ -115,28 +115,11 @@ class UserService {
   }
 
   async verifyIfExists(id: number) {
-    prismaClient.user.findFirstOrThrow({
+    await prismaClient.user.findFirstOrThrow({
       where: {
         id
       }
     });
-  }
-
-  async deleteUser(id: number) {
-    this.verifyIfExists(id);
-    await prismaClient.userGroup.deleteMany({
-      where: {
-        userId: id
-      }
-    });
-    const deletedUser = await prismaClient.user.delete({
-      where: {
-        id
-      }
-    });
-    // @ts-expect-error
-    delete deletedUser.password;
-    return deletedUser;
   }
 
   async getGroupsByUser(id: number) {
@@ -145,7 +128,7 @@ class UserService {
       where: {
         users: {
           some: {
-            userId: id
+            id
           }
         }
       }

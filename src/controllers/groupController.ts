@@ -56,18 +56,6 @@ export class GroupController {
     }
   }
 
-  async deleteGroup(request: Request, response: Response): Promise<Response> {
-    try {
-      const id = request.params.id;
-      const deletedGroup = await groupServiceInstance.deleteGroup(Number(id));
-      return response.status(StatusCodes.OK).send(deletedGroup);
-    } catch (err) {
-      return response
-        .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({ error: err instanceof Error ? err.message : 'Failed to do something exceptional' });
-    }
-  }
-
   async insertUser(request: Request, response: Response): Promise<Response> {
     try {
       const groupId = request.params.id;
