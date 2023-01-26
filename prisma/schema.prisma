@@ -34,6 +34,7 @@ model User {
   gender     String
   groups     Group[]
   matchs     Match[]
+  invitesSended InviteUser[]
   created_at DateTime @default(now())
   Team       Team?    @relation(fields: [teamId], references: [id])
   teamId     Int?
@@ -45,6 +46,7 @@ model Group {
   users        User[]
   adminID      Int
   historyMatch Match[]
+  invites    InviteUser[]
   created_at   DateTime @default(now())
 }
 
@@ -61,6 +63,14 @@ model Match {
   created_at  DateTime @default(now())
 }
 
+model InviteUser {
+  group      Group    @relation(fields: [groupId], references: [id])
+  groupId    Int
+  user       User     @relation(fields: [userId], references: [id])
+  userId     Int
+  status     String?   @default("WAITING")
+  @@id([userId, groupId])
+}
 model Team {
   id         Int      @id @default(autoincrement())
   users      User[]
