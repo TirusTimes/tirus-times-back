@@ -35,6 +35,7 @@ model User {
   groups     Group[]
   matchs     Match[]
   invitesSended InviteUser[]
+  avaliations   UserAvaliations[]
   created_at DateTime @default(now())
   Team       Team?    @relation(fields: [teamId], references: [id])
   teamId     Int?
@@ -64,15 +65,31 @@ model Match {
 }
 
 model InviteUser {
-  group      Group    @relation(fields: [groupId], references: [id])
-  groupId    Int
-  user       User     @relation(fields: [userId], references: [id])
-  userId     Int
-  status     String?   @default("WAITING")
+  group   Group   @relation(fields: [groupId], references: [id])
+  groupId Int
+  user    User    @relation(fields: [userId], references: [id])
+  userId  Int
+  status  String? @default("WAITING")
+
   @@id([userId, groupId])
 }
 model Team {
   id         Int      @id @default(autoincrement())
   users      User[]
   created_at DateTime @default(now())
+}
+
+model Avaliations {
+  id              Int               @id @default(autoincrement())
+  avaliation      Int               @default(50)
+  UserAvaliations UserAvaliations[]
+}
+
+model UserAvaliations {
+  user         User        @relation(fields: [userId], references: [id])
+  userId       Int
+  avaliation   Avaliations @relation(fields: [avaliationId], references: [id])
+  avaliationId Int
+
+  @@id([userId, avaliationId])
 }

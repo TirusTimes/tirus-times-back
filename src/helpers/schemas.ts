@@ -58,4 +58,9 @@ const schemaUpdateMatchStatus = Yup.object().shape({
   adminID: Yup.number().required()
 });
 
-export { schemaCreateUser, schemaUpdateUser, groupSchemaCreate, schemaCreateMatch, schemaUpdateMatch, schemaUpdateMatchStatus };
+const avaliationSchemaCreate = Yup.object().shape({
+  avaliation: Yup.number().positive().integer().required(),
+  userId: Yup.string().required()
+});
+
+export { schemaCreateUser, schemaUpdateUser, groupSchemaCreate, schemaCreateMatch, schemaUpdateMatch, schemaUpdateMatchStatus, avaliationSchemaCreate };
