@@ -2,7 +2,10 @@ import { StatusCodes } from 'http-status-codes';
 import { prismaClient } from '../database/prismaClient';
 import { AppError } from '../errors/AppErrors';
 import { IMatch, IMatchUpdate, Status } from '../helpers/dto';
+import { generateTeams, Player } from '../utils/generateTeams';
+import { UserService } from './userService';
 
+const userServiceInstance = new UserService();
 class MatchService {
   async createMatch({ adminID, date, location, playerLimit = 12, time, groupId }: IMatch) {
     const admin = await prismaClient.user.findFirst({
@@ -112,21 +115,42 @@ class MatchService {
   ) {
     const { match } = await this.verifyInput(id, adminID);
     if (match.status !== status) {
-      if (match.status === Status.Finished) {
-        // avaliar
-      } else {
-        const updatedMatch = await prismaClient.match.update({
-          where: {
-            id
-          },
-          data: {
-            status
-          }
-        });
+      const updatedMatch = await prismaClient.match.update({
+        where: {
+          id
+        },
+        data: {
+          status
+        }
+      });
 
-        return updatedMatch;
-      }
+      return updatedMatch;
     }
+  }
+
+  async separateTeams(matchId: number) {
+    const users = await prismaClient.user.findMany({
+      where: {
+        matchs: {
+          some: {
+            id: matchId
+          }
+        }
+      }
+    });
+
+    if (!users) {
+      throw new Error('No users found for this match');
+    }
+    const player: Player[] = [];
+
+    users.forEach(async (user) => {
+      const aval = await userServiceInstance.getUserAvaliation(user.id);
+      player.push({ name: user.firstname + ' ' + user.lastname, avaliation: aval });
+    });
+
+    const teams = await generateTeams(player);
+    return teams;
   }
 }
 
