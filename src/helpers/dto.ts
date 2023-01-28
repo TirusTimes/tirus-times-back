@@ -14,6 +14,7 @@ export interface IUser {
   position: string
   age: number
   gender: string
+  teamId: number
 }
 
 export interface IGroup {
