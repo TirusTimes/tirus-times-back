@@ -23,32 +23,32 @@ enum TEAM {
 }
 
 model User {
-  id         Int      @id @default(autoincrement())
-  username   String   @unique
-  firstname  String
-  lastname   String
-  email      String   @unique
-  password   String
-  position   String
-  age        Int
-  gender     String
-  groups     Group[]
-  matchs     Match[]
+  id            Int               @id @default(autoincrement())
+  username      String            @unique
+  firstname     String
+  lastname      String
+  email         String            @unique
+  password      String
+  position      String
+  age           Int
+  gender        String
+  groups        Group[]
+  matchs        Match[]
   invitesSended InviteUser[]
   avaliations   UserAvaliations[]
-  created_at DateTime @default(now())
-  Team       Team?    @relation(fields: [teamId], references: [id])
-  teamId     Int?
+  created_at    DateTime          @default(now())
+  Team          Team              @relation(fields: [teamId], references: [id])
+  teamId        Int
 }
 
 model Group {
-  id           Int      @id @default(autoincrement())
+  id           Int          @id @default(autoincrement())
   name         String
   users        User[]
   adminID      Int
   historyMatch Match[]
-  invites    InviteUser[]
-  created_at   DateTime @default(now())
+  invites      InviteUser[]
+  created_at   DateTime     @default(now())
 }
 
 model Match {
@@ -73,6 +73,7 @@ model InviteUser {
 
   @@id([userId, groupId])
 }
+
 model Team {
   id         Int      @id @default(autoincrement())
   users      User[]
