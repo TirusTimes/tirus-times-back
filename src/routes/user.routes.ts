@@ -33,5 +33,6 @@ userRoutes.get('/users/:id', authMiddleware, userControllerInstance.getUser);
 userRoutes.get('/users', authMiddleware, userControllerInstance.getAllUsers);
 userRoutes.put('/users/:id', authMiddleware, validateUpdateUser, userControllerInstance.updateUser);
 userRoutes.get('/users/:id/groups', authMiddleware, userControllerInstance.getAllUserGroups);
+userRoutes.get('/users/team/:id', authMiddleware, userControllerInstance.getUserTeam);
 
 export { userRoutes };

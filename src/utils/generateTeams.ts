@@ -4,11 +4,12 @@ import { promisify } from 'util';
 const random = promisify(randomBytes);
 
 export interface Player {
+  id: number
   name: string
   avaliation: number
 }
 
-interface Team {
+export interface Team {
   team: Player[]
   power: number
 }

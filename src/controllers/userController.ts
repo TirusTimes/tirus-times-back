@@ -82,4 +82,17 @@ export class UserController {
         .json({ error: err instanceof Error ? err.message : 'Failed to do something exceptional' });
     }
   }
+
+  async getUserTeam(request: Request, response: Response): Promise<Response> {
+    try {
+      const userId = Number(request.params.id);
+
+      const team = await userServiceInstance.getUserTeam(userId);
+      return response.status(StatusCodes.OK).send(team);
+    } catch (err) {
+      return response
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ error: err instanceof Error ? err.message : 'Failed to do something exceptional' });
+    }
+  }
 }
