@@ -2,7 +2,7 @@ import { StatusCodes } from 'http-status-codes';
 import { prismaClient } from '../database/prismaClient';
 import { AppError } from '../errors/AppErrors';
 import { IMatch, IMatchUpdate, Status } from '../helpers/dto';
-import { generateTeams, Player } from '../utils/generateTeams';
+import { generateTeams, Player, Team } from '../utils/generateTeams';
 import { UserService } from './userService';
 
 const userServiceInstance = new UserService();
@@ -146,11 +146,30 @@ class MatchService {
 
     users.forEach(async (user) => {
       const aval = await userServiceInstance.getUserAvaliation(user.id);
-      player.push({ name: user.firstname + ' ' + user.lastname, avaliation: aval });
+      player.push({ id: user.id, name: user.firstname + ' ' + user.lastname, avaliation: aval });
     });
 
     const teams = await generateTeams(player);
+    this.applyTeamToUser(teams);
     return teams;
+  }
+
+  applyTeamToUser(teams: Team[]) {
+    teams.forEach(async (team) => {
+      const teamCreate = await prismaClient.team.create({
+        data: {}
+      });
+      team.team.forEach(async (player) => {
+        await prismaClient.user.update({
+          where: {
+            id: player.id
+          },
+          data: {
+            teamId: teamCreate.id
+          }
+        });
+      });
+    });
   }
 }
 

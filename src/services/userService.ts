@@ -167,6 +167,22 @@ class UserService {
 
     return avaliationResult / avaliations.length;
   }
+
+  async getUserTeam(id: number) {
+    this.verifyIfExists(id);
+
+    const team = await prismaClient.team.findFirst({
+      where: {
+        users: {
+          some: {
+            id
+          }
+        }
+      }
+    });
+
+    return team;
+  }
 }
 
 export { UserService };
