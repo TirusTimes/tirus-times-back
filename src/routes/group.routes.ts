@@ -17,7 +17,7 @@ groupRoutes.delete('/groups/:id/removeUser/:userId', authMiddleware, groupContro
 // INVITES SERVICES
 groupRoutes.post('/group/:id/owner/:adminId/insertUser/:userId', authMiddleware, groupControllerInstance.acceptInvite);
 groupRoutes.post('/group/:id/user/:userId', authMiddleware, groupControllerInstance.sendInvite);
-groupRoutes.put('/group/:id/user/:user', authMiddleware, groupControllerInstance.rejectInvite);
+groupRoutes.put('/group/:id/user/:userId', authMiddleware, groupControllerInstance.rejectInvite);
 groupRoutes.get('/group/:id/owner/:adminId', authMiddleware, groupControllerInstance.getGroupsInvite);
 
 export { groupRoutes };
