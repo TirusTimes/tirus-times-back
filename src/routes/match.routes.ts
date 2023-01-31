@@ -40,5 +40,6 @@ matchRoutes.get('/match', authMiddleware, matchControllerInstance.getAllMatchs);
 matchRoutes.put('/match/:id', validateUpdateMatch, authMiddleware, matchControllerInstance.updateMatch);
 matchRoutes.patch('/match/:id', validateUpdateMatchStatus, authMiddleware, matchControllerInstance.updateMatchStatus);
 matchRoutes.get('/match/:id', authMiddleware, matchControllerInstance.getMatch);
+matchRoutes.get('/match/choose/:id', authMiddleware, matchControllerInstance.separateTeam)
 
 export { matchRoutes };
