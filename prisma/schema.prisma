@@ -37,8 +37,8 @@ model User {
   invitesSended InviteUser[]
   avaliations   UserAvaliations[]
   created_at    DateTime          @default(now())
-  Team          Team              @relation(fields: [teamId], references: [id])
-  teamId        Int
+  teamId        Int?
+  Team          Team?             @relation(fields: [teamId], references: [id])
 }
 
 model Group {
