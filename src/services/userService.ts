@@ -12,8 +12,7 @@ class UserService {
     password,
     position,
     age,
-    gender,
-    teamId
+    gender
   }: IUser) {
     const user = {
       username,
@@ -23,8 +22,7 @@ class UserService {
       password,
       position,
       age,
-      gender,
-      teamId: -1
+      gender
     };
 
     schemaCreateUser
