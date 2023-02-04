@@ -10,7 +10,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "husky install",
     "lint": "eslint .",
-    "lint:fix": "eslint --fix ."
+    "lint:fix": "eslint --fix .",
+    "prisma:generate": "prisma generate",
+    "prisma:format": "prisma format"
   },
   "lint-staged": {
     "*.(js|ts)": "eslint --fix"

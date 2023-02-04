@@ -12,7 +12,8 @@ class UserService {
     password,
     position,
     age,
-    gender
+    gender,
+    teamId
   }: IUser) {
     const user = {
       username,
@@ -22,7 +23,8 @@ class UserService {
       password,
       position,
       age,
-      gender
+      gender,
+      teamId: -1
     };
 
     schemaCreateUser
@@ -115,28 +117,11 @@ class UserService {
   }
 
   async verifyIfExists(id: number) {
-    prismaClient.user.findFirstOrThrow({
+    await prismaClient.user.findFirstOrThrow({
       where: {
         id
       }
     });
-  }
-
-  async deleteUser(id: number) {
-    this.verifyIfExists(id);
-    await prismaClient.userGroup.deleteMany({
-      where: {
-        userId: id
-      }
-    });
-    const deletedUser = await prismaClient.user.delete({
-      where: {
-        id
-      }
-    });
-    // @ts-expect-error
-    delete deletedUser.password;
-    return deletedUser;
   }
 
   async getGroupsByUser(id: number) {
@@ -145,12 +130,58 @@ class UserService {
       where: {
         users: {
           some: {
-            userId: id
+            id
           }
         }
       }
     });
     return users;
+  }
+
+  async getUserAvaliation(id: number) {
+    this.verifyIfExists(id);
+
+    const avaliations = await prismaClient.userAvaliations.findMany({
+      where: {
+        userId: {
+          equals: id
+        }
+      }
+    });
+
+    if (!avaliations) {
+      throw new Error('User does not have avaliations');
+    }
+
+    let avaliationResult = 0;
+    avaliations.forEach(async ({ avaliationId }) => {
+      const aval = await prismaClient.avaliations.findFirst({
+        where: {
+          id: avaliationId
+        }
+      });
+      if (aval) {
+        avaliationResult += aval.avaliation;
+      }
+    });
+
+    return avaliationResult / avaliations.length;
+  }
+
+  async getUserTeam(id: number) {
+    this.verifyIfExists(id);
+
+    const team = await prismaClient.team.findFirst({
+      where: {
+        users: {
+          some: {
+            id
+          }
+        }
+      }
+    });
+
+    return team;
   }
 }
 

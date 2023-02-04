@@ -58,11 +58,11 @@ export class UserController {
     }
   }
 
-  async deleteUser(request: Request, response: Response): Promise<Response> {
+  async getAllUserGroups(request: Request, response: Response): Promise<Response> {
     try {
-      const id = request.params.id;
-      const deletedUser = await userServiceInstance.deleteUser(Number(id));
-      return response.status(StatusCodes.OK).send(deletedUser);
+      const userId = request.params.id;
+      const groups = await userServiceInstance.getGroupsByUser(Number(userId));
+      return response.status(StatusCodes.OK).send(groups);
     } catch (err) {
       return response
         .status(StatusCodes.INTERNAL_SERVER_ERROR)
@@ -70,11 +70,25 @@ export class UserController {
     }
   }
 
-  async getAllUserGroups(request: Request, response: Response): Promise<Response> {
+  async getUserAvaliation(request: Request, response: Response): Promise<Response> {
     try {
-      const userId = request.params.id;
-      const groups = await userServiceInstance.getGroupsByUser(Number(userId));
-      return response.status(StatusCodes.OK).send(groups);
+      const userId = Number(request.params.id);
+
+      const aval = await userServiceInstance.getUserAvaliation(userId);
+      return response.status(StatusCodes.OK).send(aval);
+    } catch (err) {
+      return response
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ error: err instanceof Error ? err.message : 'Failed to do something exceptional' });
+    }
+  }
+
+  async getUserTeam(request: Request, response: Response): Promise<Response> {
+    try {
+      const userId = Number(request.params.id);
+
+      const team = await userServiceInstance.getUserTeam(userId);
+      return response.status(StatusCodes.OK).send(team);
     } catch (err) {
       return response
         .status(StatusCodes.INTERNAL_SERVER_ERROR)

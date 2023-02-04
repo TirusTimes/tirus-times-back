@@ -10,31 +10,87 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Status {
+  OPEN
+  STARTED
+  FINISHED
+  EVALUATE
+}
+
+enum TEAM {
+  ONE
+  TWO
+}
+
 model User {
-  id         Int      @id @default(autoincrement())
-  username   String   @unique
-  firstname  String
-  lastname   String
-  email      String   @unique
-  password   String
-  position   String
-  age        Int
-  gender     String
-  groups     UserGroup[]
-  created_at DateTime @default(now())
+  id            Int               @id @default(autoincrement())
+  username      String            @unique
+  firstname     String
+  lastname      String
+  email         String            @unique
+  password      String
+  position      String
+  age           Int
+  gender        String
+  groups        Group[]
+  matchs        Match[]
+  invitesSended InviteUser[]
+  avaliations   UserAvaliations[]
+  created_at    DateTime          @default(now())
+  Team          Team              @relation(fields: [teamId], references: [id])
+  teamId        Int
 }
 
 model Group {
+  id           Int          @id @default(autoincrement())
+  name         String
+  users        User[]
+  adminID      Int
+  historyMatch Match[]
+  invites      InviteUser[]
+  created_at   DateTime     @default(now())
+}
+
+model Match {
+  id          Int      @id @default(autoincrement())
+  location    String
+  date        DateTime
+  time        String
+  playerLimit Int      @default(12)
+  players     User[]
+  group       Group    @relation(fields: [groupId], references: [id])
+  groupId     Int
+  status      Status   @default(OPEN)
+  created_at  DateTime @default(now())
+}
+
+model InviteUser {
+  group   Group   @relation(fields: [groupId], references: [id])
+  groupId Int
+  user    User    @relation(fields: [userId], references: [id])
+  userId  Int
+  status  String? @default("WAITING")
+
+  @@id([userId, groupId])
+}
+
+model Team {
   id         Int      @id @default(autoincrement())
-  name       String
-  users      UserGroup[]
+  users      User[]
   created_at DateTime @default(now())
 }
 
-model UserGroup {
-  user      User     @relation(fields: [userId], references: [id])
-  userId    Int
-  group     Group    @relation(fields: [groupId], references: [id])
-  groupId   Int
-  @@id([userId, groupId])
+model Avaliations {
+  id              Int               @id @default(autoincrement())
+  avaliation      Int               @default(50)
+  UserAvaliations UserAvaliations[]
+}
+
+model UserAvaliations {
+  user         User        @relation(fields: [userId], references: [id])
+  userId       Int
+  avaliation   Avaliations @relation(fields: [avaliationId], references: [id])
+  avaliationId Int
+
+  @@id([userId, avaliationId])
 }
