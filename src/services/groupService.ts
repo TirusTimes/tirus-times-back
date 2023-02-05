@@ -85,17 +85,20 @@ class GroupService {
 
   async sendInvite(groupId: number, userId: number) {
     this.verifyIfExists(groupId);
-    await prismaClient.inviteUser.create({
+    const invite = await prismaClient.inviteUser.create({
       data: {
         userId,
-        groupId
+        groupId,
+        status: 'WAITING'
       }
     });
+
+    return invite;
   }
 
   async rejectInvite(groupId: number, userId: number) {
     this.verifyIfExists(groupId);
-    await prismaClient.inviteUser.update({
+    const invite = await prismaClient.inviteUser.update({
       where: {
         userId_groupId: {
           userId,
@@ -106,15 +109,21 @@ class GroupService {
         status: 'REJECTED'
       }
     });
+
+    return invite;
   }
 
   async getGroupInvites(groupId: number, owner: string) {
     this.verifyGroupOwner(groupId, Number(owner));
-    await prismaClient.inviteUser.findMany({
+    const invite = await prismaClient.inviteUser.findMany({
       where: {
-        AND: [{ groupId }, { status: 'WAITING' }]
+        groupId,
+        status: {
+          equals: 'WAITING'
+        }
       }
     });
+    return invite;
   }
 
   async removeUser(userId: number, groupId: number) {

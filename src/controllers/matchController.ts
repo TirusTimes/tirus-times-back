@@ -62,6 +62,32 @@ export class MatchController {
     }
   }
 
+  async getMatchByGroupId(request: Request, response: Response): Promise<Response> {
+    try {
+      const id = request.params.id;
+      const match = await matchServiceInstance.getMatchByGroupId(Number(id));
+      return response.status(StatusCodes.OK).send(match);
+    } catch (err) {
+      if (err instanceof AppError) { return response.status(err.statusCode).json({ error: err.message }); }
+      return response
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ error: err instanceof Error ? err.message : 'Failed to do something exceptional' });
+    }
+  }
+
+  async getUsersMatch(request: Request, response: Response): Promise<Response> {
+    try {
+      const id = request.params.id;
+      const match = await matchServiceInstance.getAllUsersByMatch(Number(id));
+      return response.status(StatusCodes.OK).send(match);
+    } catch (err) {
+      if (err instanceof AppError) { return response.status(err.statusCode).json({ error: err.message }); }
+      return response
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ error: err instanceof Error ? err.message : 'Failed to do something exceptional' });
+    }
+  }
+
   async getAllMatchs(request: Request, response: Response): Promise<Response> {
     try {
       const matchs = await matchServiceInstance.getAllMatchs();
