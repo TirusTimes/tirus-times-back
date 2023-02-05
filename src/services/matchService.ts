@@ -35,10 +35,36 @@ class MatchService {
     return matchs;
   }
 
+  async getAllUsersByMatch(id: number) {
+    this.getMatch(id);
+    const users = await prismaClient.user.findMany({
+      where: {
+        matchs: {
+          some: {
+            id
+          }
+        }
+      }
+    });
+    return users;
+  }
+
   async getMatch(id: number) {
     const match = await prismaClient.match.findFirst({
       where: {
         id
+      }
+    });
+    if (!match) {
+      throw new AppError('Match does not exists', StatusCodes.NOT_FOUND);
+    }
+    return match;
+  }
+
+  async getMatchByGroupId(id: number) {
+    const match = await prismaClient.match.findFirst({
+      where: {
+        groupId: id
       }
     });
     if (!match) {

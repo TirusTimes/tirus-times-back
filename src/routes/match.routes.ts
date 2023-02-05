@@ -37,9 +37,11 @@ const validateUpdateMatchStatus = async (request: Request, response: Response, n
 
 matchRoutes.post('/match', validateCreateMatch, authMiddleware, matchControllerInstance.createMatch);
 matchRoutes.get('/match', authMiddleware, matchControllerInstance.getAllMatchs);
+matchRoutes.get('/match/group/:id', authMiddleware, matchControllerInstance.getMatchByGroupId);
 matchRoutes.put('/match/:id', validateUpdateMatch, authMiddleware, matchControllerInstance.updateMatch);
 matchRoutes.patch('/match/:id', validateUpdateMatchStatus, authMiddleware, matchControllerInstance.updateMatchStatus);
 matchRoutes.get('/match/:id', authMiddleware, matchControllerInstance.getMatch);
+matchRoutes.get('/match/:id/users', authMiddleware, matchControllerInstance.getUsersMatch);
 matchRoutes.get('/match/choose/:id', authMiddleware, matchControllerInstance.separateTeam);
 
 export { matchRoutes };
