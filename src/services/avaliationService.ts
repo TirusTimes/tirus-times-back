@@ -6,9 +6,9 @@ import { avaliationSchemaCreate } from '../helpers/schemas';
 class AvaliationService {
   async addAvaliation(data: IAvaliation) {
     avaliationSchemaCreate.validate(data, {
-      abortEarly: false
+      abortEarly: true
     }).catch((err) => {
-      throw new Error(err.name);
+      throw new Error(err);
     });
 
     const {

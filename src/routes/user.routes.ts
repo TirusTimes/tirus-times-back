@@ -34,5 +34,7 @@ userRoutes.get('/users', authMiddleware, userControllerInstance.getAllUsers);
 userRoutes.put('/users/:id', authMiddleware, validateUpdateUser, userControllerInstance.updateUser);
 userRoutes.get('/users/:id/groups', authMiddleware, userControllerInstance.getAllUserGroups);
 userRoutes.get('/users/team/:id', authMiddleware, userControllerInstance.getUserTeam);
+userRoutes.post('/avaliation/:avaliation/user/:id', authMiddleware, userControllerInstance.sendAvaliation);
+userRoutes.get('/avaliation/:id', authMiddleware, userControllerInstance.getUserAvaliation);
 
 export { userRoutes };

@@ -147,8 +147,8 @@ class UserService {
       }
     });
 
-    if (!avaliations) {
-      throw new Error('User does not have avaliations');
+    if (!avaliations.length) {
+      return { avaliation: 50, userId: id };
     }
 
     let avaliationResult = 0;
@@ -163,7 +163,7 @@ class UserService {
       }
     });
 
-    return avaliationResult / avaliations.length;
+    return { avaliation: avaliationResult / avaliations.length, userId: id };
   }
 
   async getUserTeam(id: number) {

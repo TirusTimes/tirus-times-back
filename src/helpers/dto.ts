@@ -34,6 +34,6 @@ export interface IMatch {
 export type IMatchUpdate = Omit<IMatch, 'status' | 'players'>;
 
 export interface IAvaliation {
-  userId: string
+  userId: number
   avaliation: number
 }

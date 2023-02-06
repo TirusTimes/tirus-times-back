@@ -1,8 +1,10 @@
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { IUser } from '../helpers/dto';
+import { AvaliationService } from '../services/avaliationService';
 import { UserService } from '../services/userService';
 const userServiceInstance = new UserService();
+const avaliationServiceInstance = new AvaliationService();
 
 export class UserController {
   async createUser(request: Request, response: Response): Promise<Response> {
@@ -14,6 +16,22 @@ export class UserController {
         ...(request.body as IUser)
       });
       return response.status(StatusCodes.OK).send(user);
+    } catch (err) {
+      return response
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ error: err instanceof Error ? err.message : 'Failed to do something exceptional' });
+    }
+  }
+
+  async sendAvaliation(request: Request, response: Response): Promise<Response> {
+    try {
+      const userId = Number(request.params.id);
+      const avaliation = Number(request.params.avaliation);
+      const aval = avaliationServiceInstance.addAvaliation({
+        avaliation,
+        userId
+      });
+      return response.status(StatusCodes.OK).send(aval);
     } catch (err) {
       return response
         .status(StatusCodes.INTERNAL_SERVER_ERROR)

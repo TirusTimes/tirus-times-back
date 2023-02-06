@@ -172,7 +172,7 @@ class MatchService {
 
     users.forEach(async (user) => {
       const aval = await userServiceInstance.getUserAvaliation(user.id);
-      player.push({ id: user.id, name: user.firstname + ' ' + user.lastname, avaliation: aval });
+      player.push({ id: user.id, name: user.firstname + ' ' + user.lastname, avaliation: aval.avaliation });
     });
 
     const teams = await generateTeams(player);
