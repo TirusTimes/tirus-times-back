@@ -1,3 +1,4 @@
+import { User } from '@prisma/client';
 import { StatusCodes } from 'http-status-codes';
 import { prismaClient } from '../database/prismaClient';
 import { AppError } from '../errors/AppErrors';
@@ -194,16 +195,28 @@ class MatchService {
     if (!match?.players) {
       throw new Error('No users found for this match');
     }
-    const player: Player[] = [];
+    // if (match.players.length !== 12) {
+    //   throw new Error('Not enough users to separate team');
+    // }
+    const players = await this.getPlayersAvaliation(match.players);
 
-    match.players.forEach(async (user) => {
-      const aval = await userServiceInstance.getUserAvaliation(user.id);
-      player.push({ id: user.id, name: user.firstname + ' ' + user.lastname, avaliation: aval?.avaliation });
-    });
-
-    const teams = await generateTeams(player);
-    this.applyTeamToUser(teams);
+    const teams = await generateTeams(players);
+    // this.applyTeamToUser(teams);
     return teams;
+  }
+
+  async getPlayersAvaliation(players: User[]): Promise<Player[]> {
+    const ids = players.map(player => player.id);
+    const avaliations = await userServiceInstance.getUserAvaliation(ids);
+
+    return players.map(player => {
+      const playerAvaliation = avaliations.find(avaliation => avaliation.userId === player.id);
+      return {
+        id: player.id,
+        name: player.firstname + ' ' + player.lastname,
+        avaliation: playerAvaliation?.avaliation ?? 50
+      };
+    });
   }
 
   applyTeamToUser(teams: Team[]) {
