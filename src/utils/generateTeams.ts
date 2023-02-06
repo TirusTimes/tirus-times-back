@@ -1,12 +1,7 @@
-import { randomBytes } from 'crypto';
-import { promisify } from 'util';
-
-const random = promisify(randomBytes);
-
 export interface Player {
   id: number
   name: string
-  avaliation?: number
+  avaliation: number
 }
 
 export interface Team {
@@ -17,42 +12,45 @@ export interface Team {
 export async function generateTeams(players: Player[]): Promise<Team[]> {
   const teams: Team[] = [];
   const playersTemp = [...players];
+  const length = playersTemp.length;
 
-  for (let i = 0; i < 4; i++) {
+  for (let i = 0; i < 2; i++) {
     let avaliationTeam = 0;
 
-    const playersIndex = Array.from({ length: 5 }, (_, i) => i);
-    const shuffle = async (array: number[]) => {
+    const playersIndex = Array.from({ length: length / 2 }, (_, i) => i);
+
+    const shuffle = (array: number[]) => {
       for (let i = array.length - 1; i > 0; i--) {
-        const j = (await random(1))[0] % (i + 1);
+        const j = Math.floor(Math.random() * (i + 1));
         [array[i], array[j]] = [array[j], array[i]];
       }
       return array;
     };
-    const teamIndex = (await shuffle(playersIndex)).slice(0, 5);
+
+    const teamIndex = shuffle(playersIndex).slice(0, 6);
 
     const team = teamIndex.map(index => playersTemp[index]);
 
     team.forEach(x => {
-      avaliationTeam += (x?.avaliation ?? 50);
+      avaliationTeam += x.avaliation;
       playersTemp.splice(playersTemp.indexOf(x), 1);
     });
 
     teams.push({ team, power: avaliationTeam });
   }
 
-  if (calculateBalance(teams) < 0.2) {
-    return teams;
-  } else {
-    return await generateTeams(players);
+  while (Math.abs(teams[0].power - teams[1].power) > 40) {
+    const maxPlayer = teams[0].team.reduce((prev, current) => (prev.avaliation > current.avaliation ? prev : current));
+    const minPlayer = teams[1].team.reduce((prev, current) => (prev.avaliation < current.avaliation ? prev : current));
+    teams[0].team.splice(teams[0].team.indexOf(maxPlayer), 1);
+    teams[0].power -= maxPlayer.avaliation;
+    teams[1].team.splice(teams[1].team.indexOf(minPlayer), 1);
+    teams[1].power -= minPlayer.avaliation;
+
+    teams[0].team.push(minPlayer);
+    teams[0].power += minPlayer.avaliation;
+    teams[1].team.push(maxPlayer);
+    teams[1].power += maxPlayer.avaliation;
   }
-}
-
-function calculateBalance(teams: Team[]): number {
-  const bestTeam = teams.reduce((prev, current) => (prev.power > current.power ? prev : current));
-  const worstTeam = teams.reduce((prev, current) => (prev.power < current.power ? prev : current));
-
-  const balance = bestTeam.power - worstTeam.power;
-
-  return balance;
+  return teams;
 }

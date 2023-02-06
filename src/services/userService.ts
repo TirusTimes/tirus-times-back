@@ -155,39 +155,40 @@ class UserService {
     return users;
   }
 
-  async getUserAvaliation(id: number) {
-    const user = await prismaClient.user.findFirst({
-      where: {
-        id
-      }
-    });
-    if (!user) {
-      throw new AppError('User not found', StatusCodes.NOT_FOUND);
-    }
-
-    const avaliations = await prismaClient.userAvaliations.findMany({
-      where: {
-        userId: {
-          equals: id
+  async getUserAvaliation(ids: number[]) {
+    const avaliations = await prismaClient.user
+      .findMany({
+        where: {
+          id: {
+            in: ids
+          }
+        },
+        include: {
+          avaliations: {
+            select: {
+              avaliation: true,
+              userId: true
+            }
+          }
         }
-      },
-      include: {
-        avaliation: true
+      });
+
+    const result = avaliations.map(({ id, avaliations }) => {
+      if (!avaliations.length) {
+        return { id, avaliation: 50 };
       }
+
+      let avaliationResult = 0;
+      avaliations.forEach(({ avaliation }) => {
+        if (avaliation) {
+          avaliationResult += avaliation.avaliation;
+        }
+      });
+
+      return { id, avaliation: avaliationResult / avaliations.length, userId: avaliations[0].userId };
     });
 
-    if (!avaliations.length) {
-      return { avaliation: 50, userId: id };
-    }
-
-    let avaliationResult = 0;
-    avaliations.forEach(({ avaliation }) => {
-      if (avaliation.avaliation) {
-        avaliationResult += avaliation.avaliation;
-      }
-    });
-
-    return { avaliation: avaliationResult / avaliations.length, userId: id };
+    return result;
   }
 
   async getUserTeam(id: number) {

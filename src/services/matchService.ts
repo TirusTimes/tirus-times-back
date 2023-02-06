@@ -1,3 +1,4 @@
+import { User } from '@prisma/client';
 import { StatusCodes } from 'http-status-codes';
 import { prismaClient } from '../database/prismaClient';
 import { AppError } from '../errors/AppErrors';
@@ -194,33 +195,62 @@ class MatchService {
     if (!match?.players) {
       throw new Error('No users found for this match');
     }
-    const player: Player[] = [];
 
-    match.players.forEach(async (user) => {
-      const aval = await userServiceInstance.getUserAvaliation(user.id);
-      player.push({ id: user.id, name: user.firstname + ' ' + user.lastname, avaliation: aval?.avaliation });
-    });
+    const players = await this.getPlayersAvaliation(match.players);
 
-    const teams = await generateTeams(player);
-    this.applyTeamToUser(teams);
+    const teams = await generateTeams(players);
+    await this.applyTeamToUser(teams);
     return teams;
   }
 
-  applyTeamToUser(teams: Team[]) {
-    teams.forEach(async (team) => {
-      const teamCreate = await prismaClient.team.create({
-        data: {}
-      });
-      team.team.forEach(async (player) => {
-        await prismaClient.user.update({
-          where: {
-            id: player.id
-          },
-          data: {
-            teamId: teamCreate.id
-          }
-        });
-      });
+  async getPlayersAvaliation(players: User[]): Promise<Player[]> {
+    const ids = players.map(player => player.id);
+    const avaliations = await userServiceInstance.getUserAvaliation(ids);
+
+    return players.map(player => {
+      const playerAvaliation = avaliations.find(avaliation => avaliation.userId === player.id);
+      return {
+        id: player.id,
+        name: player.firstname + ' ' + player.lastname,
+        avaliation: playerAvaliation?.avaliation ?? 50
+      };
+    });
+  }
+
+  async applyTeamToUser(teams: Team[]) {
+    const team1Ids = teams[0].team.map(player => player.id);
+    const team2Ids = teams[1].team.map(player => player.id);
+    const createTeam1 = await prismaClient.team.create({
+      data: {}
+    });
+    const createTeam2 = await prismaClient.team.create({
+      data: {}
+    });
+
+    await prismaClient.user.updateMany({
+      where: {
+        id: {
+          in: team1Ids
+        }
+      },
+      data: {
+        teamId: {
+          set: createTeam1.id
+        }
+      }
+    });
+
+    await prismaClient.user.updateMany({
+      where: {
+        id: {
+          in: team2Ids
+        }
+      },
+      data: {
+        teamId: {
+          set: createTeam2.id
+        }
+      }
     });
   }
 }

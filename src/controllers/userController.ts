@@ -99,7 +99,7 @@ export class UserController {
     try {
       const userId = Number(request.params.id);
 
-      const aval = await userServiceInstance.getUserAvaliation(userId);
+      const aval = await userServiceInstance.getUserAvaliation([userId]);
       return response.status(StatusCodes.OK).send(aval);
     } catch (err) {
       if (err instanceof AppError) { return response.status(err.statusCode).json({ error: err.message }); }
