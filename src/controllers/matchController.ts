@@ -112,4 +112,19 @@ export class MatchController {
         .json({ error: err instanceof Error ? err.message : 'Failed to do something exceptional' });
     }
   }
+
+  async enterMatch(request: Request, response: Response): Promise<Response> {
+    try {
+      const matchId = Number(request.params.id);
+      const userId = Number(request.params.userId);
+
+      const match = await matchServiceInstance.enterMatch(userId, matchId);
+      return response.status(StatusCodes.OK).send(match);
+    } catch (err) {
+      if (err instanceof AppError) { return response.status(err.statusCode).json({ error: err.message }); }
+      return response
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ error: err instanceof Error ? err.message : 'Failed to do something exceptional' });
+    }
+  }
 }

@@ -154,23 +154,49 @@ class MatchService {
     }
   }
 
-  async separateTeams(matchId: number) {
-    const users = await prismaClient.user.findMany({
+  async enterMatch(playerId: number, matchId: number) {
+    const match = await prismaClient.match.findFirst({
       where: {
-        matchs: {
-          some: {
-            id: matchId
+        id: matchId
+      }
+    });
+
+    if (!match) {
+      return new AppError('Match does not exists', StatusCodes.NOT_FOUND);
+    }
+
+    const updatedMatch = await prismaClient.match.update({
+      where: {
+        id: matchId
+      },
+      data: {
+        players: {
+          connect: {
+            id: playerId
           }
         }
       }
     });
 
-    if (!users) {
+    return updatedMatch;
+  }
+
+  async separateTeams(matchId: number) {
+    const match = await prismaClient.match.findFirst({
+      where: {
+        id: matchId
+      },
+      include: {
+        players: true
+      }
+    });
+
+    if (!match?.players) {
       throw new Error('No users found for this match');
     }
     const player: Player[] = [];
 
-    users.forEach(async (user) => {
+    match.players.forEach(async (user) => {
       const aval = await userServiceInstance.getUserAvaliation(user.id);
       player.push({ id: user.id, name: user.firstname + ' ' + user.lastname, avaliation: aval.avaliation });
     });
