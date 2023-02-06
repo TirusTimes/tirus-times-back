@@ -1,5 +1,7 @@
 
+import { StatusCodes } from 'http-status-codes';
 import { prismaClient } from '../database/prismaClient';
+import { AppError } from '../errors/AppErrors';
 import { IAvaliation } from '../helpers/dto';
 import { avaliationSchemaCreate } from '../helpers/schemas';
 
@@ -20,7 +22,7 @@ class AvaliationService {
     const user = await this.getUserById(id);
 
     if (!user) {
-      throw new Error('User does not exist');
+      throw new AppError('User does not exist', StatusCodes.NOT_FOUND);
     }
 
     const addAvaliationToDb = await prismaClient.userAvaliations.create({

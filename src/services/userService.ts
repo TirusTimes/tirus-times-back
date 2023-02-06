@@ -1,5 +1,7 @@
 
+import { StatusCodes } from 'http-status-codes';
 import { prismaClient } from '../database/prismaClient';
+import { AppError } from '../errors/AppErrors';
 import { IUser } from '../helpers/dto';
 import { schemaCreateUser } from '../helpers/schemas';
 
@@ -52,16 +54,19 @@ class UserService {
     });
 
     if (user) {
-      throw new Error('Username already exists');
+      throw new AppError('Username already exists', StatusCodes.BAD_GATEWAY);
     }
   }
 
   async getUserById(id: number) {
-    const user = await prismaClient.user.findFirstOrThrow({
+    const user = await prismaClient.user.findFirst({
       where: {
         id
       }
     });
+    if (!user) {
+      throw new AppError('User not found', StatusCodes.NOT_FOUND);
+    }
 
     // @ts-expect-error
     delete user.password;
@@ -92,7 +97,14 @@ class UserService {
       age,
       gender
     } = newData;
-    this.verifyIfExists(id);
+    const user = await prismaClient.user.findFirst({
+      where: {
+        id
+      }
+    });
+    if (!user) {
+      throw new AppError('User not found', StatusCodes.NOT_FOUND);
+    }
 
     const updatedUser = await prismaClient.user.update({
       where: {
@@ -123,7 +135,14 @@ class UserService {
   }
 
   async getGroupsByUser(id: number) {
-    this.verifyIfExists(id);
+    const user = await prismaClient.user.findFirst({
+      where: {
+        id
+      }
+    });
+    if (!user) {
+      throw new AppError('User not found', StatusCodes.NOT_FOUND);
+    }
     const users = await prismaClient.group.findMany({
       where: {
         users: {
@@ -137,13 +156,23 @@ class UserService {
   }
 
   async getUserAvaliation(id: number) {
-    this.verifyIfExists(id);
+    const user = await prismaClient.user.findFirst({
+      where: {
+        id
+      }
+    });
+    if (!user) {
+      throw new AppError('User not found', StatusCodes.NOT_FOUND);
+    }
 
     const avaliations = await prismaClient.userAvaliations.findMany({
       where: {
         userId: {
           equals: id
         }
+      },
+      include: {
+        avaliation: true
       }
     });
 
@@ -152,14 +181,9 @@ class UserService {
     }
 
     let avaliationResult = 0;
-    avaliations.forEach(async ({ avaliationId }) => {
-      const aval = await prismaClient.avaliations.findFirst({
-        where: {
-          id: avaliationId
-        }
-      });
-      if (aval) {
-        avaliationResult += aval.avaliation;
+    avaliations.forEach(({ avaliation }) => {
+      if (avaliation.avaliation) {
+        avaliationResult += avaliation.avaliation;
       }
     });
 
@@ -167,7 +191,14 @@ class UserService {
   }
 
   async getUserTeam(id: number) {
-    this.verifyIfExists(id);
+    const user = await prismaClient.user.findFirst({
+      where: {
+        id
+      }
+    });
+    if (!user) {
+      throw new AppError('User not found', StatusCodes.NOT_FOUND);
+    }
 
     const team = await prismaClient.team.findFirst({
       where: {

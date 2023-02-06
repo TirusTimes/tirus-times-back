@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
+import { AppError } from '../errors/AppErrors';
 import { IUser } from '../helpers/dto';
 import { AvaliationService } from '../services/avaliationService';
 import { UserService } from '../services/userService';
@@ -17,6 +18,7 @@ export class UserController {
       });
       return response.status(StatusCodes.OK).send(user);
     } catch (err) {
+      if (err instanceof AppError) { return response.status(err.statusCode).json({ error: err.message }); }
       return response
         .status(StatusCodes.INTERNAL_SERVER_ERROR)
         .json({ error: err instanceof Error ? err.message : 'Failed to do something exceptional' });
@@ -27,12 +29,13 @@ export class UserController {
     try {
       const userId = Number(request.params.id);
       const avaliation = Number(request.params.avaliation);
-      const aval = avaliationServiceInstance.addAvaliation({
+      const aval = await avaliationServiceInstance.addAvaliation({
         avaliation,
         userId
       });
       return response.status(StatusCodes.OK).send(aval);
     } catch (err) {
+      if (err instanceof AppError) { return response.status(err.statusCode).json({ error: err.message }); }
       return response
         .status(StatusCodes.INTERNAL_SERVER_ERROR)
         .json({ error: err instanceof Error ? err.message : 'Failed to do something exceptional' });
@@ -45,6 +48,7 @@ export class UserController {
       const user = await userServiceInstance.getUserById(Number(id));
       return response.status(StatusCodes.OK).send(user);
     } catch (err) {
+      if (err instanceof AppError) { return response.status(err.statusCode).json({ error: err.message }); }
       return response
         .status(StatusCodes.INTERNAL_SERVER_ERROR)
         .json({ error: err instanceof Error ? err.message : 'Failed to do something exceptional' });
@@ -56,6 +60,7 @@ export class UserController {
       const users = await userServiceInstance.getAllUsers();
       return response.status(StatusCodes.OK).send(users);
     } catch (err) {
+      if (err instanceof AppError) { return response.status(err.statusCode).json({ error: err.message }); }
       return response
         .status(StatusCodes.INTERNAL_SERVER_ERROR)
         .json({ error: err instanceof Error ? err.message : 'Failed to do something exceptional' });
@@ -70,6 +75,7 @@ export class UserController {
       });
       return response.status(StatusCodes.OK).send(updatedUser);
     } catch (err) {
+      if (err instanceof AppError) { return response.status(err.statusCode).json({ error: err.message }); }
       return response
         .status(StatusCodes.INTERNAL_SERVER_ERROR)
         .json({ error: err instanceof Error ? err.message : 'Failed to do something exceptional' });
@@ -82,6 +88,7 @@ export class UserController {
       const groups = await userServiceInstance.getGroupsByUser(Number(userId));
       return response.status(StatusCodes.OK).send(groups);
     } catch (err) {
+      if (err instanceof AppError) { return response.status(err.statusCode).json({ error: err.message }); }
       return response
         .status(StatusCodes.INTERNAL_SERVER_ERROR)
         .json({ error: err instanceof Error ? err.message : 'Failed to do something exceptional' });
@@ -95,6 +102,7 @@ export class UserController {
       const aval = await userServiceInstance.getUserAvaliation(userId);
       return response.status(StatusCodes.OK).send(aval);
     } catch (err) {
+      if (err instanceof AppError) { return response.status(err.statusCode).json({ error: err.message }); }
       return response
         .status(StatusCodes.INTERNAL_SERVER_ERROR)
         .json({ error: err instanceof Error ? err.message : 'Failed to do something exceptional' });
@@ -106,8 +114,12 @@ export class UserController {
       const userId = Number(request.params.id);
 
       const team = await userServiceInstance.getUserTeam(userId);
+      if (!team) {
+        throw new AppError('User does not belong to a Team', StatusCodes.NOT_FOUND);
+      }
       return response.status(StatusCodes.OK).send(team);
     } catch (err) {
+      if (err instanceof AppError) { return response.status(err.statusCode).json({ error: err.message }); }
       return response
         .status(StatusCodes.INTERNAL_SERVER_ERROR)
         .json({ error: err instanceof Error ? err.message : 'Failed to do something exceptional' });

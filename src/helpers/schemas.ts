@@ -59,7 +59,7 @@ const schemaUpdateMatchStatus = Yup.object().shape({
 });
 
 const avaliationSchemaCreate = Yup.object().shape({
-  avaliation: Yup.number().positive().required(),
+  avaliation: Yup.number().positive('Avaliation cannot be negative.').integer().max(100, 'Please avaliate between 0 and 100').required(),
   userId: Yup.number().required()
 });
 
