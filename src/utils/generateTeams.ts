@@ -6,7 +6,7 @@ const random = promisify(randomBytes);
 export interface Player {
   id: number
   name: string
-  avaliation: number
+  avaliation?: number
 }
 
 export interface Team {
@@ -34,7 +34,7 @@ export async function generateTeams(players: Player[]): Promise<Team[]> {
     const team = teamIndex.map(index => playersTemp[index]);
 
     team.forEach(x => {
-      avaliationTeam += x.avaliation;
+      avaliationTeam += (x?.avaliation ?? 50);
       playersTemp.splice(playersTemp.indexOf(x), 1);
     });
 
