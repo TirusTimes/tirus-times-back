@@ -1,10 +1,8 @@
+import { StatusCodes } from 'http-status-codes';
 import { prismaClient } from '../database/prismaClient';
+import { AppError } from '../errors/AppErrors';
 import { groupSchemaCreate } from '../helpers/schemas';
 import { IGroup } from './../helpers/dto';
-import { UserService } from './userService';
-
-const userServiceInstance = new UserService();
-
 class GroupService {
   async createGroup({ name, adminID }: IGroup) {
     const group = {
@@ -25,11 +23,14 @@ class GroupService {
   }
 
   async getGroupById(id: number) {
-    const group = await prismaClient.group.findFirstOrThrow({
+    const group = await prismaClient.group.findFirst({
       where: {
         id
       }
     });
+    if (!group) {
+      throw new AppError('Group not found', StatusCodes.NOT_FOUND);
+    }
     return group;
   }
 
@@ -55,7 +56,14 @@ class GroupService {
   async acceptInvite(userId: number, groupId: number, adminId: string) {
     this.verifyGroupOwner(groupId, Number(adminId));
     this.verifyIfExists(groupId);
-    userServiceInstance.verifyIfExists(userId);
+    const user = await prismaClient.user.findFirst({
+      where: {
+        id: userId
+      }
+    });
+    if (!user) {
+      throw new AppError('User not found', StatusCodes.NOT_FOUND);
+    }
     const userGroup = await prismaClient.group.update({
       where: {
         id: groupId
@@ -128,7 +136,14 @@ class GroupService {
 
   async removeUser(userId: number, groupId: number) {
     this.verifyIfExists(groupId);
-    userServiceInstance.verifyIfExists(userId);
+    const user = await prismaClient.user.findFirst({
+      where: {
+        id: userId
+      }
+    });
+    if (!user) {
+      throw new AppError('User not found', StatusCodes.NOT_FOUND);
+    }
     const removedUserGroup = await prismaClient.group.update({
       where: {
         id: groupId
@@ -159,20 +174,27 @@ class GroupService {
   }
 
   private async verifyIfExists(id: number) {
-    prismaClient.group.findFirstOrThrow({
+    const group = prismaClient.group.findFirst({
       where: {
         id
       }
     });
+
+    if (!group) {
+      throw new AppError('Group not found', StatusCodes.NOT_FOUND);
+    }
   }
 
   private async verifyGroupOwner(id: number, adminID: number) {
-    prismaClient.group.findFirstOrThrow({
+    const group = prismaClient.group.findFirst({
       where: {
         id,
         adminID
       }
     });
+    if (!group) {
+      throw new AppError('Group not found ', StatusCodes.NOT_FOUND);
+    }
   }
 }
 
