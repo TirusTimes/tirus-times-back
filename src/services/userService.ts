@@ -35,8 +35,6 @@ class UserService {
         throw new Error(err.name);
       });
 
-    this.validateInsert(user);
-
     const createdUser = await prismaClient.user.create({
       data: user
     });

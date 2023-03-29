@@ -4,6 +4,7 @@ import { AppError } from '../errors/AppErrors';
 import { IUser } from '../helpers/dto';
 import { AvaliationService } from '../services/avaliationService';
 import { UserService } from '../services/userService';
+import jwt from 'jsonwebtoken';
 const userServiceInstance = new UserService();
 const avaliationServiceInstance = new AvaliationService();
 
@@ -16,7 +17,10 @@ export class UserController {
       const user = await userServiceInstance.createUser({
         ...(request.body as IUser)
       });
-      return response.status(StatusCodes.OK).send(user);
+      const secret = process.env.SECRET ?? 'default';
+      const token = jwt.sign({ id: user?.id }, secret, { expiresIn: '1d' });
+
+      return response.status(StatusCodes.OK).send({ user, token });
     } catch (err) {
       if (err instanceof AppError) { return response.status(err.statusCode).json({ error: err.message }); }
       return response
