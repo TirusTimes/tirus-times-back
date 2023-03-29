@@ -170,7 +170,12 @@ class GroupService {
         }
       }
     });
-    return users;
+    const usersWithoutPasswords = users.map(user => {
+      // @ts-expect-error
+      delete user.password;
+      return user;
+    });
+    return usersWithoutPasswords;
   }
 
   private async verifyIfExists(id: number) {
