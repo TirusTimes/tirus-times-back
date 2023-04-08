@@ -204,7 +204,7 @@ class MatchService {
     const players = await this.getPlayersAvaliation(match.players);
 
     const teams = await generateTeams(players);
-    await this.applyTeamToUser(teams);
+    await this.applyTeamToUser(teams.teams);
     return teams;
   }
 
@@ -223,40 +223,26 @@ class MatchService {
   }
 
   async applyTeamToUser(teams: Team[]) {
-    const team1Ids = teams[0].team.map(player => player.id);
-    const team2Ids = teams[1].team.map(player => player.id);
-    const createTeam1 = await prismaClient.team.create({
-      data: {}
-    });
-    const createTeam2 = await prismaClient.team.create({
-      data: {}
-    });
-
-    await prismaClient.user.updateMany({
-      where: {
-        id: {
-          in: team1Ids
+    const createTeams = [];
+    for (let i = 0; i < teams.length; i++) {
+      const createTeam = await prismaClient.team.create({
+        data: {}
+      });
+      createTeams.push(createTeam);
+      const teamIds = teams[i].team.map(player => player.id);
+      await prismaClient.user.updateMany({
+        where: {
+          id: {
+            in: teamIds
+          }
+        },
+        data: {
+          teamId: {
+            set: createTeam.id
+          }
         }
-      },
-      data: {
-        teamId: {
-          set: createTeam1.id
-        }
-      }
-    });
-
-    await prismaClient.user.updateMany({
-      where: {
-        id: {
-          in: team2Ids
-        }
-      },
-      data: {
-        teamId: {
-          set: createTeam2.id
-        }
-      }
-    });
+      });
+    }
   }
 }
 
