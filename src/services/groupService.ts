@@ -23,7 +23,7 @@ class GroupService {
   }
 
   async getGroupById(id: number) {
-    const group = await prismaClient.group.findFirst({
+    const group = await prismaClient.group.findUnique({
       where: {
         id
       }
@@ -56,7 +56,7 @@ class GroupService {
   async acceptInvite(userId: number, groupId: number, adminId: string) {
     this.verifyGroupOwner(groupId, Number(adminId));
     this.verifyIfExists(groupId);
-    const user = await prismaClient.user.findFirst({
+    const user = await prismaClient.user.findUnique({
       where: {
         id: userId
       }
@@ -77,15 +77,12 @@ class GroupService {
       }
     });
 
-    await prismaClient.inviteUser.update({
+    await prismaClient.inviteUser.delete({
       where: {
         userId_groupId: {
           userId,
           groupId
         }
-      },
-      data: {
-        status: 'ACCEPTED'
       }
     });
     return userGroup;
@@ -106,15 +103,12 @@ class GroupService {
 
   async rejectInvite(groupId: number, userId: number) {
     this.verifyIfExists(groupId);
-    const invite = await prismaClient.inviteUser.update({
+    const invite = await prismaClient.inviteUser.delete({
       where: {
         userId_groupId: {
           userId,
           groupId
         }
-      },
-      data: {
-        status: 'REJECTED'
       }
     });
 
@@ -126,9 +120,7 @@ class GroupService {
     const invite = await prismaClient.inviteUser.findMany({
       where: {
         groupId,
-        status: {
-          equals: 'WAITING'
-        }
+        status: 'WAITING'
       }
     });
     return invite;
@@ -136,7 +128,7 @@ class GroupService {
 
   async removeUser(userId: number, groupId: number) {
     this.verifyIfExists(groupId);
-    const user = await prismaClient.user.findFirst({
+    const user = await prismaClient.user.findUnique({
       where: {
         id: userId
       }
@@ -161,16 +153,8 @@ class GroupService {
 
   async getUsersByGroup(id: number) {
     this.verifyIfExists(id);
-    const users = await prismaClient.user.findMany({
-      where: {
-        groups: {
-          some: {
-            id
-          }
-        }
-      }
-    });
-    const usersWithoutPasswords = users.map(user => {
+    const groupUsers = await prismaClient.group.findUnique({ where: { id }, include: { users: true } });
+    const usersWithoutPasswords = groupUsers?.users.map(user => {
       // @ts-expect-error
       delete user.password;
       return user;
@@ -179,7 +163,7 @@ class GroupService {
   }
 
   private async verifyIfExists(id: number) {
-    const group = prismaClient.group.findFirst({
+    const group = prismaClient.group.findUnique({
       where: {
         id
       }

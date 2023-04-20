@@ -43,7 +43,7 @@ class AvaliationService {
   }
 
   async getUserById(id: number) {
-    const user = await prismaClient.user.findFirst({
+    const user = await prismaClient.user.findUnique({
       where: {
         id
       }

@@ -154,39 +154,21 @@ class UserService {
   }
 
   async getUserAvaliation(ids: number[]) {
-    const avaliations = await prismaClient.user
-      .findMany({
-        where: {
-          id: {
-            in: ids
-          }
-        },
-        include: {
-          avaliations: {
-            select: {
-              avaliation: true,
-              userId: true
-            }
-          }
-        }
-      });
+    const playersAvaliationsSum = await Promise.all(
+      ids.map(async (id) => {
+        const avaliations = await prismaClient.userAvaliations.findMany({
+          where: { userId: id },
+          include: { avaliation: true }
+        });
+        const sum = avaliations.reduce(
+          (acc, current) => acc + current.avaliation.avaliation,
+          0
+        );
+        return { id, avaliation: sum / avaliations.length };
+      })
+    );
 
-    const result = avaliations.map(({ id, avaliations }) => {
-      if (!avaliations.length) {
-        return { id, avaliation: 50 };
-      }
-
-      let avaliationResult = 0;
-      avaliations.forEach(({ avaliation }) => {
-        if (avaliation) {
-          avaliationResult += avaliation.avaliation;
-        }
-      });
-
-      return { id, avaliation: avaliationResult / avaliations.length, userId: avaliations[0].userId };
-    });
-
-    return result;
+    return playersAvaliationsSum;
   }
 
   async getUserTeam(id: number) {
