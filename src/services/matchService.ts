@@ -37,17 +37,13 @@ class MatchService {
   }
 
   async getAllUsersByMatch(id: number) {
-    this.getMatch(id);
-    const users = await prismaClient.user.findMany({
-      where: {
-        matchs: {
-          some: {
-            id
-          }
-        }
-      }
-    });
-    const usersWithoutPasswords = users.map(user => {
+    const match = await prismaClient.match.findUnique({ where: { id }, include: { players: true } });
+
+    if (!match) {
+      throw new AppError('Match does not exists', StatusCodes.NOT_FOUND);
+    }
+
+    const usersWithoutPasswords = match?.players.map(user => {
       // @ts-expect-error
       delete user.password;
       return user;
@@ -56,7 +52,7 @@ class MatchService {
   }
 
   async getMatch(id: number) {
-    const match = await prismaClient.match.findFirst({
+    const match = await prismaClient.match.findUnique({
       where: {
         id
       }
@@ -68,15 +64,14 @@ class MatchService {
   }
 
   async getMatchByGroupId(id: number) {
-    const match = await prismaClient.match.findFirst({
-      where: {
-        groupId: id
-      }
+    const mostRecentMatch = await prismaClient.match.findFirst({
+      where: { groupId: id },
+      orderBy: { created_at: 'desc' }
     });
-    if (!match) {
+    if (!mostRecentMatch) {
       throw new AppError('Match does not exists', StatusCodes.NOT_FOUND);
     }
-    return match;
+    return mostRecentMatch;
   }
 
   async updateMatch(
@@ -161,10 +156,8 @@ class MatchService {
   }
 
   async enterMatch(playerId: number, matchId: number) {
-    const match = await prismaClient.match.findFirst({
-      where: {
-        id: matchId
-      }
+    const match = await prismaClient.match.findUnique({
+      where: { id: matchId }
     });
 
     if (!match) {
@@ -188,14 +181,7 @@ class MatchService {
   }
 
   async separateTeams(matchId: number) {
-    const match = await prismaClient.match.findFirst({
-      where: {
-        id: matchId
-      },
-      include: {
-        players: true
-      }
-    });
+    const match = await prismaClient.match.findUnique({ where: { id: matchId }, include: { players: true } });
 
     if (!match?.players) {
       throw new Error('No users found for this match');
@@ -203,7 +189,7 @@ class MatchService {
 
     const players = await this.getPlayersAvaliation(match.players);
 
-    const teams = await generateTeams(players);
+    const teams = generateTeams(players);
     await this.applyTeamToUser(teams);
     return teams;
   }
@@ -213,7 +199,7 @@ class MatchService {
     const avaliations = await userServiceInstance.getUserAvaliation(ids);
 
     return players.map(player => {
-      const playerAvaliation = avaliations.find(avaliation => avaliation.userId === player.id);
+      const playerAvaliation = avaliations.find(avaliation => avaliation.id === player.id);
       return {
         id: player.id,
         name: player.firstname + ' ' + player.lastname,
@@ -223,39 +209,16 @@ class MatchService {
   }
 
   async applyTeamToUser(teams: Team[]) {
-    const team1Ids = teams[0].team.map(player => player.id);
-    const team2Ids = teams[1].team.map(player => player.id);
-    const createTeam1 = await prismaClient.team.create({
-      data: {}
-    });
-    const createTeam2 = await prismaClient.team.create({
-      data: {}
-    });
+    teams.forEach(async ({ team }) => {
+      const ids = team.map(player => ({ id: player.id }));
 
-    await prismaClient.user.updateMany({
-      where: {
-        id: {
-          in: team1Ids
+      await prismaClient.team.create({
+        data: {
+          users: {
+            connect: ids
+          }
         }
-      },
-      data: {
-        teamId: {
-          set: createTeam1.id
-        }
-      }
-    });
-
-    await prismaClient.user.updateMany({
-      where: {
-        id: {
-          in: team2Ids
-        }
-      },
-      data: {
-        teamId: {
-          set: createTeam2.id
-        }
-      }
+      });
     });
   }
 }
